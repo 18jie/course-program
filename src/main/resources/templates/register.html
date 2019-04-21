@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"></script>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">
+    <style type="text/css">
+        .navbar-USF {
+            left: 0;
+            top: 0;
+            position: fixed;
+            height: 100%;
+            width: 45px;
+            background-color: #3C3C3C;
+        }
+
+        .navbar-USF a {
+            display: block;
+            padding: 10px;
+            line-height: 25px;
+            height: 45px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .navbar-USF a:hover {
+            background: #E0E0E0;
+        }
+
+        .navbar-USF a span {
+            height: 25px;
+            width: 25px;
+        }
+
+        .sign-page {
+            margin-top: 30px;
+            padding: 40px;
+        }
+
+        .alert {
+            position: absolute;
+            width: 18%;
+            left: 40%;
+            top: 5%;
+            display: none;
+        }
+
+        .alert p {
+            text-align: center;
+        }
+
+        .signup-page {
+            float: left;
+            width: 49%;
+            display: inline-block;
+            vertical-align: top;
+            border-right: 1px solid #d9d9d9;
+        }
+
+        .signin-page {
+            float: left;
+            width: 49%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        form {
+            width: 301px;
+            display: block;
+            margin: 20px;
+            margin-left: 100px;
+        }
+
+        .input-prepend span {
+            width: 42px;
+            height: 42px;
+        }
+
+        .input-prepend input {
+            width: 228px;
+            height: 42px;
+            padding: 4px 12px;
+        }
+
+        span#control-group {
+            margin: 0 0 100px 0;
+        }
+
+        .js-send-code-button {
+            background: #3194d0;
+        }
+    </style>
+</head>
+<body>
+<div class="navbar-USF">
+    <div class="dropdown">
+        <a href="/">
+            <span class="glyphicon glyphicon-home"></span>
+        </a>
+        <a href="/">
+            <span class="glyphicon glyphicon-th"></span>
+        </a>
+    </div>
+</div>
+<div class="container">
+    <div class="sign-page">
+        <div class="alert alert-info" role="alert">
+            <p>
+                注册成功，请登陆
+            </p>
+        </div>
+        <div class="signup-page">
+            <form id="registerForm" onsubmit="return register()">
+                <h3>
+                    使用邮箱注册
+                </h3>
+                <p class="slogan">
+                    最好使用学号注册
+                </p>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <input type="text" name="username" placeholder="用户名">
+                </div>
+                <br>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-envelope"></span>
+                    <input id="email" type="text" name="email" placeholder="Email">
+                </div>
+                <br>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-lock"></span>
+                    <input type="password" name="password" placeholder="******">
+                </div>
+                <br>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-lock"></span>
+                    <input type="password" name="password1" placeholder="******">
+                </div>
+                <br>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-lock"></span>
+                    <input type="text" name="emailCode" placeholder="输入邮箱验证码">
+                    <button class="btn btn-block js-send-code-button" type="button">发送验证码</button>
+                </div>
+                <br>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">
+                    <span>注册</span>
+                </button>
+            </form>
+        </div>
+        <div class="signin-page">
+            <form id="loginForm" onsubmit="return checkForm()">
+                <h3>
+                    Sign in
+                </h3>
+                <p class="slogan">
+                    Quick Start
+                </p>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-user"></span>
+                    <input type="text" name="email" placeholder="邮箱">
+                </div>
+                <br>
+                <div class="input-prepend">
+                    <span class="glyphicon glyphicon-lock"></span>
+                    <input type="password" name="password" placeholder="******">
+                </div>
+                <br>
+                <span id="control-group">
+              <label>
+                <input type="checkbox" value="option1">
+                Remember Me |
+              </label>
+              <a href="/user/newpasswd">Forgot Password?</a>
+            </span>
+                <br>
+                <button class="btn btn-lg btn-danger btn-block" type="submit">
+                    <span>登陆</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".js-send-code-button").on("click", sendcode);
+    });
+
+    var tale = new $.tale();
+
+    function checkForm() {
+        tale.post({
+            url: '/index/do_login',
+            data: $("#loginForm").serialize(),
+            success: function (result) {
+                if (result && result.success) {
+                    window.location.href = '/index';
+                } else {
+                    tale.alertError(result.msg || '登录失败');
+                }
+            }
+        });
+        return false;
+    }
+
+    var RESET_COUNT = 60;//首先设置默认计时数为60秒。
+    var countdown = RESET_COUNT;
+
+    //定义倒计时处理方法
+    function settime(obj) {
+        if (countdown == 0) {//结束计时
+            obj.css("cursor", "pointer");//鼠标小手指针
+            obj.css("background", "#3194d0");//背景设设置为#3194d0
+            $(".js-send-code-button").on("click", sendcode);
+            obj.text("发送验证码");//复原计时按钮上内容
+            countdown = RESET_COUNT;
+            return;
+        } else {
+            obj.css("background", "#ddd");//背景色设置为#ddd
+            obj.css("cursor", "default");//鼠标箭头指针
+            if (countdown == RESET_COUNT) {
+                $(".js-send-code-button").off("click", sendcode);
+            }
+            obj.text("重新发送(" + countdown + ")");//更新按钮上计时内容
+            countdown--;
+        }
+        setTimeout(function () {
+            settime(obj)
+        }, 1000);
+    }
+
+    //定义发送验证发方法
+    function sendcode() {
+        //验证邮箱输入为邮箱后进行发送计时
+        var flag = false;
+        var email = $.trim($("#email").val());
+        var message = "";
+        var myreg = /^([\.a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])+/;
+        if (email == "") {
+            message = "邮箱不能为空！";
+        } else if (!myreg.test(email)) {
+            message = "请输入有效的邮箱地址！";
+        } else {
+            flag = true;
+        }
+        if (flag) {
+            settime($(".js-send-code-button"));
+            $(".js-send-code-button").off("click", sendcode);//移除“.js-send-code-button”对象上绑定的click事件，使点击无效
+            sendEmailCode();
+        } else {
+            tale.alertError(message);//提示消息
+            return false;
+        }
+    }
+
+    function register() {
+        tale.post({
+            url: '/index/do_register',
+            data: $("#registerForm").serialize(),
+            success: function (result) {
+                if (result && result.success) {
+                    tale.alertOk("恭喜你注册成功");
+                } else {
+                    tale.alertError(result.msg || '注册失败,稍后再试');
+                }
+            }
+        });
+        return false;
+    }
+
+    function sendEmailCode() {
+        tale.post({
+            url: '/index/email_code',
+            data: $("#email").serialize(),
+            success: function (result) {
+                if (result && result.success) {
+                    tale.alertOk(result.msg || '发送成功');
+                } else {
+                    tale.alertError(result.msg || '发送失败');
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>
