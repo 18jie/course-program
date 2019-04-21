@@ -41,4 +41,10 @@ public class UserService {
         return userDao.selectOne(user);
     }
 
+    public User getUserByEmail(String email){
+        User user = new User();
+        user.setEmail(email);
+        return userDao.selectOne(user);
+    }
+
 }
