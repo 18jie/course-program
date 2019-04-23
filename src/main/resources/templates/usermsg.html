@@ -23,7 +23,7 @@
     <div th:replace="comm/header::pagination(active=${active},user=${session.user})"></div>
 
     <div class="jumbotron">
-        <form class="form-horizontal" id="messageForm" role="form">
+        <form class="form-horizontal" id="messageForm" role="form" onsubmit="return submitForm()">
             <fieldset>
                 <legend>基本信息</legend>
                 <div class="form-group">
@@ -114,7 +114,7 @@
     function checkOldPassword(password) {
         tale.post({
             url:'/user/check_password',
-            data:password,
+            data:$("#ds_host1").serialize(),
             success:function (result) {
                 if (result && result.success) {
                 } else {

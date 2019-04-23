@@ -1,9 +1,12 @@
 package com.fengjie.courseprogram.server;
 
+import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.User;
 import com.fengjie.courseprogram.model.param.LoginParam;
 import com.fengjie.courseprogram.model.param.RegisterParam;
+import com.fengjie.courseprogram.model.param.UserModifyParam;
 import com.fengjie.courseprogram.mybatis.dao.UserDao;
+import com.fengjie.courseprogram.util.DateKit;
 import com.fengjie.courseprogram.util.MD5Kit;
 import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.BeanUtils;
@@ -41,10 +44,20 @@ public class UserService {
         return userDao.selectOne(user);
     }
 
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         User user = new User();
         user.setEmail(email);
         return userDao.selectOne(user);
+    }
+
+    public int updateUser(UserModifyParam userModifyParam) {
+        if (userModifyParam.getPassword() != null) {
+            userModifyParam.setPassword(MD5Kit.convertMD5(userModifyParam.getPassword()));
+        }
+        User user = LoginUserContext.getUser();
+        BeanUtils.copyProperties(userModifyParam, user);
+        DateKit.updateObject(user);
+        return userDao.updateByPrimaryKeySelective(user);
     }
 
 }

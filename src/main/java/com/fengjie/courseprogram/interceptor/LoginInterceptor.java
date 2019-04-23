@@ -1,9 +1,12 @@
 package com.fengjie.courseprogram.interceptor;
 
+import com.fengjie.courseprogram.constants.context.LoginUserContext;
+import com.fengjie.courseprogram.model.entity.User;
 import com.fengjie.courseprogram.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import javax.security.auth.login.LoginContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +26,7 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
         }
 
         if(request.getSession().getAttribute("user") != null) {
+            LoginUserContext.setUser((User) request.getSession().getAttribute("user"));
             return true;
         }
 

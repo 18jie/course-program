@@ -16,7 +16,12 @@ public class CourseProgramApplicationTests {
     @Test
     public void contextLoads() {
         User test = userDao.selectByPrimaryKey("test");
-        System.out.println(test);
+        test.setUsername("测试");
+        int i = userDao.updateByPrimaryKeySelective(test);
+        System.out.println(i);
+//        System.out.println(test);
+
+
     }
 
 }
