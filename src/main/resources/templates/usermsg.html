@@ -29,13 +29,13 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="ds_host">用户名</label>
                     <div class="col-sm-4">
-                        <input class="form-control" id="ds_host" type="text" th:value="${session.user.username}"/>
+                        <input class="form-control" id="ds_host" type="text" name="username" th:value="${session.user.username}"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="ds_username">基本信息</label>
                     <div class="col-sm-10">
-                        <textarea class="form-control" id="ds_username" type="text" rows="3"
+                        <textarea class="form-control" id="ds_username" type="text" rows="3" name="info"
                                   th:value="${session.user.info}"></textarea>
                     </div>
                 </div>
@@ -45,19 +45,19 @@
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="ds_host1">原密码</label>
                     <div class="col-sm-4">
-                        <input class="form-control" id="ds_host1" type="text" placeholder="请输入原密码"/>
+                        <input class="form-control" id="ds_host1" type="password" name="oldPassword" placeholder="请输入原密码"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="ds_host2">新密码</label>
                     <div class="col-sm-4">
-                        <input class="form-control" id="ds_host2" type="text" placeholder="请输入新密码"/>
+                        <input class="form-control" id="ds_host2" type="password" name="password" placeholder="请输入新密码"/>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label" for="ds_host3">新密码</label>
                     <div class="col-sm-4">
-                        <input class="form-control" id="ds_host3" type="text" placeholder="确认新密码"/>
+                        <input class="form-control" id="ds_host3" type="password" name="newPassword" placeholder="确认新密码"/>
                     </div>
                 </div>
             </fieldset>
@@ -111,7 +111,7 @@
         return false;
     }
 
-    function checkOldPassword(password) {
+    function checkOldPassword() {
         tale.post({
             url:'/user/check_password',
             data:$("#ds_host1").serialize(),
