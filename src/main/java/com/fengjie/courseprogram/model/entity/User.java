@@ -1,6 +1,6 @@
 package com.fengjie.courseprogram.model.entity;
 
-import com.fengjie.courseprogram.model.entity.base.BaseDTO;
+import com.fengjie.courseprogram.model.entity.base.BaseDO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -12,7 +12,7 @@ import javax.persistence.Column;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class User extends BaseDTO {
+public class User extends BaseDO {
 
     @Column(name = "username")
     private String username;

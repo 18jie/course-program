@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"></script>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <link href="navbar.css" rel="stylesheet">
+
+
+    <!-- 输入框组件 -->
+    <link th:href="@{/static/plugins/tagsinput/jquery.tagsinput.css}" href="" rel="stylesheet">
+    <link th:href="@{/static/plugins/select2/dist/css/select2-bootstrap.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/toggles/toggles.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/multi-select/0.9.12/css/multi-select.min.css}" rel="stylesheet"/>
+    <link th:href="@{/static/plugins/select2/3.4.8/select2.min.css}" rel="stylesheet"/>
+    <link th:href="@{/static/plugins/mditor/css/mditor.min.css}" rel="stylesheet"/>
+    <link th:href="@{/static/plugins/summernote/0.8.2/summernote.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/dropzone/4.3.0/min/dropzone.min.css}" rel="stylesheet">
+    <!-- 输入框组件结束 -->
+
+    <meta charset="utf-8"/>
+    <title>题目</title>
+</head>
+<body>
+<div class="container">
+    <div th:replace="comm/header::pagination(active=${active},user=${session.user})"></div>
+    <div class="jumbotron">
+        <h1 th:text="${question.title}"></h1>
+        <p th:text="${question.info}"></p>
+        <fieldset>
+            <legend>编程输入</legend>
+            <form id="programForm">
+                <div class="col-sm-12">
+                    <textarea class="form-control" id="ds_username" type="text" name="program" rows="8"></textarea>
+                </div>
+                <span></span>
+                <center>
+                    <button class="btn btn-lg btn-primary" style="width: 20%;" type="submit">
+                        <span>提交</span>
+                    </button>
+                </center>
+            </form>
+        </fieldset>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+<script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+<script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+<script th:th:inline="javascript" type="text/javascript">
+    var tale = new $.tale();
+    function submitForm() {
+        tale.post({
+            url:'/program/submit?questionId=' + [[${question.id}]],
+            data:$("#programForm").serialize(),
+            success:function (result) {
+                if (result && result.success) {
+                } else {
+                    tale.alertError(result.msg || '旧密码输入错误');
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</body>
+</html>

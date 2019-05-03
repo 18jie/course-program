@@ -10,6 +10,12 @@ spring:
     static-path-pattern: /static/**
   thymeleaf:
     prefix: classpath:/templates/
+    cache: false
+  devtools:
+    restart:
+      enabled: true
+      additional-exclude: scr/main/java
+      exclude: templates
 
 mybatis:
   base-packages: classpath:mybatis/mappers/**/*.xml
@@ -17,4 +23,9 @@ mybatis:
 mapper:
   not-empty: false
   identity: mysql
+pagehelper:
+  helper-dialect: mysql
+  params: countSql
+  reasonable: false
+  support-methods-arguments: true
 

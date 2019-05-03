@@ -2,50 +2,6 @@
 <html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 
 <div th:fragment="pagination(active,user)">
-    <!--<nav class="navbar navbar-default" role="navigation">-->
-        <!--<div class="container-fluid">-->
-            <!--<div class="navbar-header">-->
-                <!--<a class="navbar-brand" href="#">码,码不停题</a>-->
-            <!--</div>-->
-            <!--<div>-->
-                <!--&lt;!&ndash; 在li中class="active"表示当前选中的标签 &ndash;&gt;-->
-                <!--<ul class="nav navbar-nav">-->
-                    <!--<li th:class="${active} ? 'active' : ((${active}=='head')?'active':'' )">-->
-                        <!--<a href="/index/">首页</a>-->
-                    <!--</li>-->
-                    <!--<li th:class="${avtive}?'' : ((${active}=='promgrams')?'active':'' )">-->
-                        <!--<a href="/program?page=1/">题库</a>-->
-                    <!--</li>-->
-                    <!--<li th:class="${avtive}?'' : ((${active}=='competition')?'active':'' )">-->
-                        <!--<a href="/competition/">比赛</a>-->
-                    <!--</li>-->
-                    <!--<li th:class="${avtive}?'' : ((${active}=='leaderboard')?'active':'' )">-->
-                        <!--<a href="/leaderboard/">排行榜</a>-->
-                    <!--</li>-->
-                    <!--<li class="dropdown">-->
-                        <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown">-->
-                            <!--教务管理-->
-                            <!--<b class="caret"></b>-->
-                        <!--</a>-->
-                        <!--<ul class="dropdown-menu">-->
-                            <!--<li>-->
-                                <!--<a href="#">学生端</a>-->
-                            <!--</li>-->
-                            <!--<li class="divider"></li>-->
-                            <!--<li>-->
-                                <!--<a href="#">教师端</a>-->
-                            <!--</li>-->
-                        <!--</ul>-->
-                    <!--</li>-->
-                <!--</ul>-->
-            <!--</div>-->
-            <!--<ul class="nav navbar-nav navbar-right">-->
-                <!--<li><a href="/index/login"><span class="glyphicon glyphicon-log-in"></span> 登录</a></li>-->
-            <!--</ul>-->
-            <!--<ul class="nav navbar-nav navbar-right">-->
-                <!--<li><a href="#">注册</a></li>-->
-            <!--</ul>-->
-        <!--</div>-->
 
     <!--</nav>-->
     <nav class="navbar navbar-default">
@@ -63,11 +19,11 @@
                 <ul class="nav navbar-nav">
                     <!-- th:class="${active} ? 'active' : ((${active}=='head')?'active':'' )" -->
                     <li th:class="(${active} == 'head') ? 'active' : ''"><a href="/index/">首页</a></li>
-                    <li th:class="${active} == 'promgrams' ? 'active' : ''"><a href="#">题库</a></li>
-                    <li th:class="${active} == 'competition' ? 'active' : ''">
+                    <li th:class="(${active} == 'program') ? 'active' : ''"><a href="/program/pages">题库</a></li>
+                    <li th:class="(${active} == 'competition') ? 'active' : ''">
                         <a href="/competition/">比赛</a>
                     </li>
-                    <li th:class="${active} == 'leaderboard' ? 'active' : ''">
+                    <li th:class="(${active} == 'leaderboard') ? 'active' : ''">
                         <a href="/leaderboard/">排行榜</a>
                     </li>
                     <li class="dropdown">

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"></script>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <link href="navbar.css" rel="stylesheet">
+    <meta charset="utf-8" />
+    <title>题目列表</title>
+</head>
+<body>
+    <div class="container">
+        <div th:replace="comm/header::pagination(active=${active},user=${session.user})"></div>
+        <div class="jumbotron">
+            <div class="input-group col-md-5" style="margin-top:0px;positon:relative">
+                <input type="text" class="form-control" placeholder="请输入字段名" />
+                <span class="input-group-btn">
+               <button class="btn btn-info btn-search">查找</button>
+            </span>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>编号</th>
+                    <th>名称</th>
+                    <th>通过率</th>
+                    <th>难度</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="question : ${questions.getList()}">
+                    <td th:text="${question.title}"></td>
+                    <td th:text="${question.info}"></td>
+                    <td th:if="${question.totalTried}" th:text="${question.totalPassed / question.totalTried}'%'"></td>
+                    <td th:unless="${question.totalTried}">0%</td>
+                    <td><span th:class="(${question.level} == 1) ? 'label label-info' : ((${question.level} == 2) ? 'label label-warning' : 'label label-danger')" th:text="(${question.level} == 1) ? '简单' : ((${question.level} == 2) ? '中等' : '困难')"></span></td>
+                </tr>
+                <!--<tr>-->
+                    <!--<td>1</td>-->
+                    <!--<td><a href="/program/question">Tanmay</a></td>-->
+                    <!--<td>Bangalore</td>-->
+                    <!--<td><span class="label label-info">简单</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>2</td>-->
+                    <!--<td><a href="#">Sachin</a></td>-->
+                    <!--<td>Mumbai</td>-->
+                    <!--<td><span class="label label-warning">中等</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>3</td>-->
+                    <!--<td><a href="#">Uma</a></td>-->
+                    <!--<td>Pune</td>-->
+                    <!--<td><span class="label label-danger">困难</span></td>-->
+                <!--</tr>-->
+
+                <!--<tr>-->
+                    <!--<td>1</td>-->
+                    <!--<td><a href="#">Tanmay</a></td>-->
+                    <!--<td>Bangalore</td>-->
+                    <!--<td><span class="label label-info">简单</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>2</td>-->
+                    <!--<td><a href="#">Sachin</a></td>-->
+                    <!--<td>Mumbai</td>-->
+                    <!--<td><span class="label label-warning">中等</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>3</td>-->
+                    <!--<td><a href="#">Uma</a></td>-->
+                    <!--<td>Pune</td>-->
+                    <!--<td><span class="label label-danger">困难</span></td>-->
+                <!--</tr>-->
+
+                <!--<tr>-->
+                    <!--<td>1</td>-->
+                    <!--<td><a href="#">Tanmay</a></td>-->
+                    <!--<td>Bangalore</td>-->
+                    <!--<td><span class="label label-info">简单</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>2</td>-->
+                    <!--<td><a href="#">Sachin</a></td>-->
+                    <!--<td>Mumbai</td>-->
+                    <!--<td><span class="label label-warning">中等</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>3</td>-->
+                    <!--<td><a href="#">Uma</a></td>-->
+                    <!--<td>Pune</td>-->
+                    <!--<td><span class="label label-danger">困难</span></td>-->
+                <!--</tr>-->
+
+                <!--<tr>-->
+                    <!--<td>1</td>-->
+                    <!--<td><a href="#">Tanmay</a></td>-->
+                    <!--<td>Bangalore</td>-->
+                    <!--<td><span class="label label-info">简单</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>2</td>-->
+                    <!--<td><a href="#">Sachin</a></td>-->
+                    <!--<td>Mumbai</td>-->
+                    <!--<td><span class="label label-warning">中等</span></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>3</td>-->
+                    <!--<td><a href="#">Uma</a></td>-->
+                    <!--<td>Pune</td>-->
+                    <!--<td><span class="label label-danger">困难</span></td>-->
+                <!--</tr>-->
+                </tbody>
+            </table>
+            <ul class="pager">
+                <li th:class="(${questions.getPageNum()} == 1) ? 'previous disabled' : 'previous'"></li>
+                <li th:each="pageNum : ${pageNums}">
+                    <a th:href="@{/program/pageList/(current=${pageNum})}"></a>
+                </li>
+                <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next disabled' : 'next'"><a href="#">Newer &rarr;</a></li>
+            </ul>
+            <!--<ul class="pager">-->
+                <!--<li class="previous"><a href="#">&larr; Older</a></li>-->
+                <!--<li class="active"><a href="#">1</a></li>-->
+                <!--<li><a href="#">2</a></li>-->
+                <!--<li><a href="#">3</a></li>-->
+                <!--<li><a href="#">4</a></li>-->
+                <!--<li><a href="#">5</a></li>-->
+                <!--<li class="next"><a href="#">Newer &rarr;</a></li>-->
+            <!--</ul>-->
+        </div>
+    </div>
+</body>
+</html>

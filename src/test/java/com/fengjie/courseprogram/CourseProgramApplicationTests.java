@@ -2,6 +2,8 @@ package com.fengjie.courseprogram;
 
 import com.fengjie.courseprogram.model.entity.User;
 import com.fengjie.courseprogram.mybatis.dao.UserDao;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class CourseProgramApplicationTests {
     @Autowired
     UserDao userDao;
+
     @Test
     public void contextLoads() {
         User test = userDao.selectByPrimaryKey("test");
@@ -22,6 +25,13 @@ public class CourseProgramApplicationTests {
 //        System.out.println(test);
 
 
+    }
+
+    @Test
+    public void testPage() {
+        PageInfo<User> pageinfo = PageHelper.startPage(1, 2).doSelectPageInfo(() -> userDao.selectAll());
+        System.out.println(pageinfo.getTotal());
+        System.out.println(pageinfo.getList());
     }
 
 }
