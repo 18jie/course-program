@@ -14,7 +14,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-    <link th:href="/static/css/navbar.css" rel="stylesheet">
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">
     <meta charset="utf-8"/>
     <title>用户信息</title>
 </head>
@@ -36,7 +38,7 @@
                     <label class="col-sm-2 control-label" for="ds_username">基本信息</label>
                     <div class="col-sm-10">
                         <textarea class="form-control" id="ds_username" type="text" rows="3" name="info"
-                                  th:value="${session.user.info}"></textarea>
+                                  th:text="${session.user.info}"></textarea>
                     </div>
                 </div>
             </fieldset>
@@ -98,7 +100,7 @@
         }
 
         tale.post({
-            url: '/user/modify_userMsg',
+            url: '/user/modify_user',
             data: $("#messageForm").serialize(),
             success: function (result) {
                 if (result && result.success) {

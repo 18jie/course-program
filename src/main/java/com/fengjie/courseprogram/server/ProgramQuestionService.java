@@ -13,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
+import tk.mybatis.mapper.entity.Example;
+
+import java.math.BigDecimal;
 
 /**
  * @author fengjie
@@ -32,8 +35,10 @@ public class ProgramQuestionService {
     }
 
     public PageInfo<ProgramQuestion> pageQuestions(Page page) {
+        Example example = new Example(ProgramQuestion.class);
+        example.setOrderByClause("question_no");
         return PageHelper.startPage(page.getPageNum(), page.getPageSize())
-                .doSelectPageInfo(() -> programQuestionDao.selectAll());
+                .doSelectPageInfo(() -> programQuestionDao.selectByExample(example));
     }
 
     /**
@@ -50,7 +55,7 @@ public class ProgramQuestionService {
         if (res) {
             log.debug("编译成功" + "compilerTakeTime：" + compiler.getCompilerTakeTime());
             try {
-                compiler.runMainMethod(StringUtils.isEmpty(in) ? null : in.getBytes());
+                compiler.runMainMethod(StringUtils.isEmpty(in) ? "".getBytes() : in.getBytes());
                 log.debug("runTakeTime：" + compiler.getRunTakeTime());
                 if (compiler.getRunTakeTime() > 2000) {
                     return RestResponse.fail("运行超时");
@@ -73,7 +78,22 @@ public class ProgramQuestionService {
 
     public RestResponse exeProgram(ProgramParam programParam, String questionId) {
         ProgramAnswer answer = answerService.getAnswerByQuestionId(questionId);
-        return this.handleProgram(programParam.getProgram(), answer.getSystemIn(), answer.getSystemOut());
+        RestResponse restResponse = handleProgram(programParam.getProgram(), answer.getSystemIn(), answer.getSystemOut());
+        this.questionExecAfter(questionId, restResponse.isSuccess());
+        return restResponse;
+    }
+
+    private void questionExecAfter(String questionId, boolean isPassed) {
+        ProgramQuestion question = programQuestionDao.selectByPrimaryKey(questionId);
+        question.setTotalTried(question.getTotalTried() + 1);
+        if (isPassed) {
+            question.setTotalPassed(question.getTotalPassed() + 1);
+        }
+        float tried = Float.valueOf(String.valueOf(question.getTotalTried()));
+        float rate = question.getTotalPassed() / tried;
+        BigDecimal passRate = new BigDecimal(rate);
+        question.setPassRate(passRate);
+        programQuestionDao.updateByPrimaryKeySelective(question);
     }
 
 

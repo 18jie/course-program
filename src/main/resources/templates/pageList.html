@@ -14,7 +14,9 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-    <link href="navbar.css" rel="stylesheet">
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">
     <meta charset="utf-8" />
     <title>题目列表</title>
 </head>
@@ -39,10 +41,10 @@
                 </thead>
                 <tbody>
                 <tr th:each="question : ${questions.getList()}">
-                    <td th:text="${question.title}"></td>
-                    <td th:text="${question.info}"></td>
-                    <td th:if="${question.totalTried}" th:text="${question.totalPassed / question.totalTried}'%'"></td>
-                    <td th:unless="${question.totalTried}">0%</td>
+                    <td th:text="${question.questionNo}"></td>
+                    <td><a th:text="${question.title}" th:href="@{/program/question(questionId=${question.id})}"></a></td>
+                    <td th:if="${question.totalTried} != 0" th:text="${question.passRate} + '%'"></td>
+                    <td th:if="${question.totalTried} == 0">0%</td>
                     <td><span th:class="(${question.level} == 1) ? 'label label-info' : ((${question.level} == 2) ? 'label label-warning' : 'label label-danger')" th:text="(${question.level} == 1) ? '简单' : ((${question.level} == 2) ? '中等' : '困难')"></span></td>
                 </tr>
                 <!--<tr>-->
@@ -123,11 +125,18 @@
                 </tbody>
             </table>
             <ul class="pager">
-                <li th:class="(${questions.getPageNum()} == 1) ? 'previous disabled' : 'previous'"></li>
-                <li th:each="pageNum : ${pageNums}">
-                    <a th:href="@{/program/pageList/(current=${pageNum})}"></a>
+                <li th:class="(${questions.getPageNum()} == 1) ? 'previous active' : 'previous'">
+                    <a th:if="${questions.getPageNum()} != 1" th:href="@{/program/pages(current=${questions.getPageNum() - 1})}">&larr; Older</a>
+                    <span th:if="${questions.getPageNum()} == 1">&larr; Older</span>
                 </li>
-                <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next disabled' : 'next'"><a href="#">Newer &rarr;</a></li>
+                <li th:each="pageNum : ${pageNums}" th:class="(${questions.getPageNum()} == ${pageNum}) ? 'active' : ''">
+                    <a th:if="${questions.getPageNum()} != ${pageNum}" th:href="@{/program/pages(current=${pageNum})}" th:text="${pageNum}"></a>
+                    <span th:if="${questions.getPageNum()} == ${pageNum}" th:text="${pageNum}"></span>
+                </li>
+                <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next active' : 'next'">
+                    <a th:if="${questions.getPageNum()} != ${questions.getPages()}" th:href="@{/program/pages(current=${questions.getPageNum() + 1})}">Newer &rarr;</a>
+                    <span th:if="${questions.getPageNum()} == ${questions.getPages()}">Newer &rarr;</span>
+                </li>
             </ul>
             <!--<ul class="pager">-->
                 <!--<li class="previous"><a href="#">&larr; Older</a></li>-->

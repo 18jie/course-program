@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengjie.courseprogram.mybatis.mappers.ProgramQuestionMapper">
+    <select id="selectAllOrderByQuestionNo" resultType="programQuestion">
+        select * from program_questions order by question_no;
+    </select>
+</mapper>

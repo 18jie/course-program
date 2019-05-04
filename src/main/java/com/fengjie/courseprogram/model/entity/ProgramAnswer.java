@@ -15,7 +15,7 @@ public class ProgramAnswer extends BaseDO {
     @Column(name = "question_id")
     private String questionId;
 
-    @Column(name = "system_id")
+    @Column(name = "system_in")
     private String systemIn;
 
     @Column(name = "system_out")

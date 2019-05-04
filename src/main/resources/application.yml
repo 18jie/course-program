@@ -3,8 +3,8 @@ spring:
     name: cource-program
   datasource:
     username: root
-    password: 123456
-    url: jdbc:mysql://localhost:3306/course_program?serverTimezone=Asia/Shanghai
+    password: f944480199@
+    url: jdbc:mysql://localhost:3306/paper_program?serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     static-path-pattern: /static/**
@@ -18,8 +18,8 @@ spring:
       exclude: templates
 
 mybatis:
-  base-packages: classpath:mybatis/mappers/**/*.xml
   type-aliases-package: com.fengjie.courseprogram.model
+  mapper-locations: classpath:mybatis/mappers/*.xml
 mapper:
   not-empty: false
   identity: mysql
@@ -28,4 +28,14 @@ pagehelper:
   params: countSql
   reasonable: false
   support-methods-arguments: true
-
+#logging:
+#  level:
+#    root: error
+#    org:
+#      springframework:
+#        security: DEBUG
+#        web: ERROR
+#      hibernate: DEBUG
+#      apache:
+#        commons:
+#          dbcp2: DEBUG

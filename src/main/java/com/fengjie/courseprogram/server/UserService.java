@@ -12,6 +12,7 @@ import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.StringUtils;
 
 /**
  * @author fengjie
@@ -55,7 +56,15 @@ public class UserService {
             userModifyParam.setPassword(MD5Kit.convertMD5(userModifyParam.getPassword()));
         }
         User user = LoginUserContext.getUser();
-        BeanUtils.copyProperties(userModifyParam, user);
+        if(!StringUtils.isEmpty(userModifyParam.getPassword())){
+            user.setPassword(userModifyParam.getPassword());
+        }
+        if(!StringUtils.isEmpty(userModifyParam.getUsername())){
+            user.setUsername(userModifyParam.getUsername());
+        }
+        if(!StringUtils.isEmpty(userModifyParam.getInfo())){
+            user.setInfo(userModifyParam.getInfo());
+        }
         DateKit.updateObject(user);
         return userDao.updateByPrimaryKeySelective(user);
     }

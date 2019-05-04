@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/user_message")
-    public String getUser(String email){
+    public String getUser(){
         return "usermsg";
     }
 

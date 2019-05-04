@@ -9,6 +9,8 @@ import lombok.Data;
 @Data
 public class ProgramParam {
 
+    private String questionId;
+
     private String program;
 
 }

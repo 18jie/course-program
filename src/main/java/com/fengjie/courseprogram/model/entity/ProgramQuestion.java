@@ -5,6 +5,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 /**
  * @author fengjie
@@ -17,8 +18,8 @@ public class ProgramQuestion extends BaseDO {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "program_no")
-    private Integer programNo;
+    @Column(name = "question_no")
+    private Integer questionNo;
 
     @Column(name = "info")
     private String info;
@@ -34,5 +35,8 @@ public class ProgramQuestion extends BaseDO {
 
     @Column(name = "total_passed")
     private Integer totalPassed;
+
+    @Column(name = "pass_rate")
+    private BigDecimal passRate;
 
 }

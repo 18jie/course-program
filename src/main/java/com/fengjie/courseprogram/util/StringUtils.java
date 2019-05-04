@@ -33,6 +33,10 @@ public class StringUtils {
         return uri.startsWith("/resources");
     }
 
+    public static boolean isTeacherUri(String uri){
+        return uri.startsWith("/teacher");
+    }
+
     public static String getUUID() {
         return UUID.randomUUID().toString();
     }

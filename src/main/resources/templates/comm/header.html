@@ -37,7 +37,7 @@
                             </li>
                             <li class="divider"></li>
                             <li>
-                                <a href="#">教师端</a>
+                                <a href="/teacher/teacherLogin">教师端</a>
                             </li>
                         </ul>
                     </li>
@@ -45,7 +45,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li>
                         <a th:unless="${user}" th:text="登录" th:href="@{/index/register}"></a>
-                        <a th:if="${user}" th:text="${user.username}" href="/user/user_message" th:href="@{/user/user_message(email=${user.email})}"></a>
+                        <a th:if="${user}" th:text="${user.username}" href="/user/user_message"></a>
                     </li>
                     <li><a th:text="${user} != null ? '登出' : '注册'" th:href="${user} == null? '/index/register' : '/index/logout'"></a></li>
                 </ul>

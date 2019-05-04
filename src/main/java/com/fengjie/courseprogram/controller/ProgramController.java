@@ -29,7 +29,6 @@ public class ProgramController {
 
     @GetMapping("/pages")
     public String listPage(ModelMap map, String current, String search) {
-        //需要使用ajax异步发送json类型的数据
         map.addAttribute("active", "program");
         Page page;
         if (StringUtils.isEmpty(current)) {
@@ -38,8 +37,8 @@ public class ProgramController {
             page = new Page(Integer.parseInt(current), 12);
         }
         PageInfo<ProgramQuestion> questions = questionService.pageQuestions(page);
-        if (questions.getPageSize() > 0) {
-            List<Integer> pageNums = IntStream.rangeClosed(1, questions.getPageSize()).boxed().collect(Collectors.toList());
+        if (questions.getPages() > 0) {
+            List<Integer> pageNums = IntStream.rangeClosed(1, questions.getPages()).boxed().collect(Collectors.toList());
             map.addAttribute("pageNums", pageNums);
         }
         map.addAttribute("questions", questions);
@@ -56,8 +55,8 @@ public class ProgramController {
 
     @PostMapping("/submit")
     public @ResponseBody
-    RestResponse submitProgram(@RequestBody ProgramParam programParam, @RequestParam String questionId){
-        return questionService.exeProgram(programParam,questionId);
+    RestResponse submitProgram(ProgramParam programParam){
+        return questionService.exeProgram(programParam,programParam.getQuestionId());
     }
 
 }
