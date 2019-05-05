@@ -27,4 +27,7 @@ public class BaseDO {
     @Column(name = "update_user")
     private String updateUser;
 
+    @Column(name = "delete_flag")
+    private Integer deleteFlag;
+
 }
