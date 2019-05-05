@@ -12,7 +12,7 @@ import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author fengjie
