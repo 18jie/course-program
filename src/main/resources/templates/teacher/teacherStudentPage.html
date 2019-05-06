@@ -48,8 +48,8 @@
 
         $.ajax(
             {
-                url: "/teacher/class/delete",
-                data: {"classId": id},
+                url: "/teacher/student/delete",
+                data: {"id": id},
                 type: "post",
                 success: function (data) {
                     if (data.success) {
@@ -76,20 +76,23 @@
     }
 
     // 编辑表单
-    function get_edit_info(class_id) {
-        if (!class_id) {
+    function get_edit_info(student_id) {
+        if (!student_id) {
             alert('Error！');
             return false;
         }
 
         tale.post({
-            url:'/teacher/class/getClassInfo',
-            data:{"classId": class_id},
-            success:function (result) {
-                if(result && result.success){
-                    $("#class_id").val(result.payload.id);
-                    $("#class_name").val(result.payload.name);
-                }else{
+            url: '/teacher/student/get',
+            data: {"id": student_id},
+            success: function (result) {
+                if (result && result.success) {
+                    $("#id").val(result.payload.id);
+                    $("#student_name").val(result.payload.name);
+                    $("#student_code").val(result.payload.studentCode);
+                    $("#email").val(result.payload.email);
+                    $("#info").val(result.payload.info);
+                } else {
                     tale.alertError("服务器错误");
                 }
             }
@@ -100,11 +103,11 @@
 
     // 提交表单
     function check_form() {
-        var class_id = $.trim($('#class_id').val());
+        var student_id = $.trim($('#id').val());
         // var class_name = $.trim($('#class_name')).val();
         // var act     = $.trim($('#act').val());
 
-        if (!class_id) {
+        if (!student_id) {
             alert('用户ID不能为空！');
             return false;
         }
@@ -113,7 +116,7 @@
         // 异步提交数据到action/add_action.php页面
         $.ajax(
             {
-                url: "/teacher/class/updateClass",
+                url: "/teacher/student/update",
                 data: $('#form_data').serialize(),
                 type: "post",
                 dataType: "json",
@@ -163,10 +166,11 @@
                 <!--<li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
                 <!--<li><a href="#">Reports</a></li>-->
                 <li th:class="(${sideActive} == 'classification') ? 'active' : ''">
-                    <a th:href="(${sideActive} != 'classification') ? '/teacher/student/classification' : ''">学生分类</a>
+                    <a th:href="(${sideActive} == '') ? '/teacher/student/classification' : ''">学生分类</a>
                 </li>
-                <li th:class="(${sideActive} == 'addStudeng') ? 'active' : ''">
-                    <a th:href="(${sideActive} != 'addStudeng') ? '/teacher/student/addStudeng' : ''">添加学生</a>
+                <li>
+                    <a th:if="${sideActive} != 'addStudeng'" href="/teacher/student/addStudent">添加学生</a>
+                    <span th:if="${sideActive} == 'addStudeng'">学生分类</span>
                 </li>
             </ul>
         </div>
@@ -175,19 +179,21 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>班级</th>
-                        <th>修改</th>
-                        <th>删除</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>邮箱</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="item : ${classes}">
+                    <tr th:each="item : ${students}">
+                        <td th:text="${item.name}"></td>
+                        <td th:text="${item.studentCode}"></td>
+                        <td th:text="${item.email}"></td>
                         <td>
-                            <a th:href="@{/teacher/student/pages(classId=${item.id})}" th:text="${item.name}"></a>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-info" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
-                            编辑</button>
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                                编辑
+                            </button>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger"
@@ -221,11 +227,42 @@
                 <div class="modal-body">
                     <form class="form-horizontal" role="form">
                         <div class="form-group">
-                            <input type="hidden" name="classId" id="class_id"/>
-                            <label for="class_name" class="col-sm-3 control-label">课程名</label>
+                            <input type="hidden" name="id" id="id"/>
+                            <label for="student_name" class="col-sm-3 control-label">学生名</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" id="class_name" name="className"
-                                       placeholder="请输入课程名">
+                                <input type="text" class="form-control" id="student_name" name="name"
+                                       placeholder="学生姓名">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="col-sm-3 control-label">邮箱</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="email" value="" id="email"
+                                       placeholder="用户名">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="student_code" class="col-sm-3 control-label">学号</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="studentCode" value="" id="student_code"
+                                       placeholder="学号">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="col-sm-3 control-label">密码</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="address" value="" id="password"
+                                       placeholder="密码">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="info" class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-9">
+                        <textarea class="form-control" name="info" value="" id="info"
+                                  placeholder="备注">
+                        </textarea>
                             </div>
                         </div>
                     </form>

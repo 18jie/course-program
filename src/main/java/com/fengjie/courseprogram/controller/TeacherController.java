@@ -2,6 +2,7 @@ package com.fengjie.courseprogram.controller;
 
 import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
+import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.entity.Teacher;
 import com.fengjie.courseprogram.model.param.LoginParam;
 import com.fengjie.courseprogram.server.TeacherService;
@@ -77,6 +78,7 @@ public class TeacherController {
         map.addAttribute("classes", classes);
         return "teacher/teacherStudentClassification";
     }
+
 
     @GetMapping("/student/addStudent")
     public String teacherAddStudent(ModelMap map, HttpSession session) {
