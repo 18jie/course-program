@@ -35,9 +35,15 @@
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <!--<li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
-                <li><a href="#">学生概览</a></li>
-                <li><a href="#">学生分类</a></li>
-                <li><a href="#">录入学生</a></li>
+                <!--<li><a href="#">学生概览</a></li>-->
+                <li>
+                    <a th:if="${sideActive} != 'studentClassification'" href="/teacher/student/classification">学生分类</a>
+                    <span th:if="${sideActive} == 'studentClassification'">学生分类</span>
+                </li>
+                <li>
+                    <a th:if="${sideActive} != 'addStudeng'" href="/teacher/student/addStudent">添加学生</a>
+                    <span th:if="${sideActive} == 'addStudeng'">学生分类</span>
+                </li>
             </ul>
             <!--<ul class="nav nav-sidebar">-->
                 <!--<li><a href="">Nav item</a></li>-->

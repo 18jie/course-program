@@ -22,6 +22,7 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
         String uri = request.getRequestURI();
+        System.out.println(uri);
         log.debug(uri);
         if(StringUtils.isStaticResources(uri)) {
             return true;

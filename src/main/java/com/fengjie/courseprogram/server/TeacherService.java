@@ -1,6 +1,8 @@
 package com.fengjie.courseprogram.server;
 
+import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
+import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.entity.Teacher;
 import com.fengjie.courseprogram.model.param.LoginParam;
 import com.fengjie.courseprogram.mybatis.dao.TeacherDao;
@@ -23,6 +25,12 @@ public class TeacherService {
     @Autowired
     private CourseService courseService;
 
+    @Autowired
+    private ClassService classService;
+
+    @Autowired
+    private StudentService studentService;
+
     public Teacher loginCheck(LoginParam loginParam) {
         Teacher teacher = new Teacher();
         teacher.setEmail(loginParam.getEmail());
@@ -37,8 +45,17 @@ public class TeacherService {
         return courseService.getCoursesByTeacherId(teacherId);
     }
 
-    public Course getCourseByCourseId(String courseId){
+    public Course getCourseByCourseId(String courseId) {
         return courseService.getCourse(courseId);
     }
+
+    public List<Class> getClassesByCourseId(String courseId) {
+        return classService.getClassesByCourseId(courseId);
+    }
+
+    public List<Student> getStudentByClassId(String classId) {
+        return studentService.getStudentsByClassId(classId);
+    }
+
 
 }

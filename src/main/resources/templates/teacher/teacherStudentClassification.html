@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>教师首页</title>
+
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <!--<link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">-->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<script>
+    var tale = new $.tale;
+
+    // 提交表单
+    function delete_info(id) {
+        if (!id) {
+            alert('Error！');
+            return false;
+        }
+        // var form_data = new Array();
+
+        $.ajax(
+            {
+                url: "/teacher/class/delete",
+                data: {"ClassId": id},
+                type: "post",
+                beforeSend: function () {
+                    $("#tip").html("<span style='color:blue'>正在处理...</span>");
+                    return true;
+                },
+                success: function (data) {
+                    if (data.success) {
+                        alert('操作成功');
+                        $("#tip").html("<span style='color:blueviolet'>恭喜，删除成功！</span>");
+
+                        // document.location.href='world_system_notice.php'
+                        location.reload();
+                    }
+                    else {
+                        $("#tip").html("<span style='color:red'>失败，请重试</span>");
+                        alert('操作失败');
+                    }
+                },
+                error: function () {
+                    alert('请求出错');
+                },
+                complete: function () {
+                    // $('#tips').hide();
+                }
+            });
+
+        return false;
+    }
+
+    // 编辑表单
+    function get_edit_info(class_id) {
+        if (!class_id) {
+            alert('Error！');
+            return false;
+        }
+
+        tale.post({
+            url:'/teacher/class/getClassInfo',
+            data:{"classId": class_id},
+            success:function (result) {
+                if(result && result.success){
+                    $("#class_id").val(result.payload.id);
+                    $("#class_name").val(result.payload.name);
+                }else{
+                    tale.alertError("服务器错误");
+                }
+            }
+        });
+
+        return false;
+    }
+
+    // 提交表单
+    function check_form() {
+        var class_id = $.trim($('#class_id').val());
+        // var class_name = $.trim($('#class_name')).val();
+        // var act     = $.trim($('#act').val());
+
+        if (!class_id) {
+            alert('用户ID不能为空！');
+            return false;
+        }
+        // var form_data = $('#form_data').serialize();
+
+        // 异步提交数据到action/add_action.php页面
+        $.ajax(
+            {
+                url: "/teacher/class/updateClass",
+                data: $('#form_data').serialize(),
+                type: "post",
+                dataType: "json",
+                beforeSend: function () {
+                    $("#tip").html("<span style='color:blue'>正在处理...</span>");
+                    return true;
+                },
+                success: function (data) {
+                    if (data.success) {
+                        var msg = "添加";
+                        $("#tip").html("<span style='color:blueviolet'>恭喜，" + msg + "成功！</span>");
+                        // document.location.href='system_notice.php'
+                        tale.alertOk("修改成功");
+                        location.reload();
+                    }
+                    else {
+                        $("#tip").html("<span style='color:red'>失败，请重试</span>");
+                        alert('操作失败');
+                    }
+                },
+                error: function () {
+                    alert('请求出错');
+                },
+                complete: function () {
+                    $('#acting_tips').hide();
+                }
+            });
+
+        return false;
+    }
+
+    $(function () {
+        $('#addUserModal').on('hide.bs.modal', function () {
+            // 关闭时清空edit状态为add
+            $("#act").val("add");
+            location.reload();
+        })
+    });
+</script>
+
+<body>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <!--<li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
+                <!--<li><a href="#">Reports</a></li>-->
+                <li>
+                    <a th:if="${sideActive} != 'studentClassification'" href="/teacher/student/classification">学生分类</a>
+                    <span th:if="${sideActive} == 'studentClassification'">学生分类</span>
+                </li>
+                <li>
+                    <a th:if="${sideActive} != 'addStudeng'" href="/teacher/student/addStudent">添加学生</a>
+                    <span th:if="${sideActive} == 'addStudeng'">学生分类</span>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>班级</th>
+                        <th>修改</th>
+                        <th>删除</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${classes}">
+                        <td th:text="${item.name}"></td>
+                        <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">编辑
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger"
+                                    th:onclick="return delete_info([[${item.id}]])">删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 模态框示例（Modal） -->
+<form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()"
+      style="margin: 20px;">
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        用户信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" role="form">
+                        <div class="form-group">
+                            <input type="hidden" name="classId" id="class_id"/>
+                            <label for="class_name" class="col-sm-3 control-label">课程名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="class_name" name="className"
+                                       placeholder="请输入课程名">
+                            </div>
+                        </div>
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="lastname" class="col-sm-3 control-label">用户名</label>-->
+                        <!--<div class="col-sm-9">-->
+                        <!--<input type="text" class="form-control" name="user_name" value="" id="user_name"-->
+                        <!--placeholder="用户名">-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                        <!--<label for="lastname" class="col-sm-3 control-label">地址</label>-->
+                        <!--<div class="col-sm-9">-->
+                        <!--<input type="text" class="form-control" name="address" value="" id="address"-->
+                        <!--placeholder="地址">-->
+                        <!--</div>-->
+                        <!--</div>-->
+
+                        <!--<div class="form-group">-->
+                        <!--<label for="remark" class="col-sm-3 control-label">备注</label>-->
+                        <!--<div class="col-sm-9">-->
+                        <!--<textarea  class="form-control"  name="remark" value="{remark}" id="remark"-->
+                        <!--placeholder="备注">-->
+
+                        <!--</textarea>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        提交
+                    </button>
+                    <span id="tip"> </span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script th:src="@{/static/js/holder.min.js}"></script>
+</body>
+</html>

@@ -32,6 +32,8 @@ CREATE TABLE `class` (
 
 /*Data for the table `class` */
 
+insert  into `class`(`id`,`course_id`,`name`,`create_user`,`create_time`,`update_user`,`update_time`,`delete_flag`) values ('testclass1','test1','19信计1',NULL,NULL,NULL,NULL,0),('testclass2','test1','19云计算',NULL,NULL,NULL,NULL,0);
+
 /*Table structure for table `course` */
 
 DROP TABLE IF EXISTS `course`;
