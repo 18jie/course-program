@@ -1,5 +1,6 @@
 package com.fengjie.courseprogram.controller;
 
+import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.Student;
@@ -61,30 +62,7 @@ public class TeacherController {
         return "teacher/teacherStudent";
     }
 
-    //学生管理
-
-    @GetMapping("/student")
-    public String teacherStudent(ModelMap map) {
-        map.addAttribute("active", "student");
-        return "teacher/teacherStudent";
-    }
-
-    @GetMapping("/student/classification")
-    public String teacherStudentClassification(ModelMap map, HttpSession session) {
-        map.addAttribute("sideActive", "classification");
-        map.addAttribute("active", "student");
-        Course course = (Course) session.getAttribute("course");
-        List<Class> classes = teacherService.getClassesByCourseId(course.getId());
-        map.addAttribute("classes", classes);
-        return "teacher/teacherStudentClassification";
-    }
-
-
-    @GetMapping("/student/addStudent")
-    public String teacherAddStudent(ModelMap map, HttpSession session) {
-        return "";
-    }
-
+    //学生管理 在teacherStudentController
 
     //作业管理
 

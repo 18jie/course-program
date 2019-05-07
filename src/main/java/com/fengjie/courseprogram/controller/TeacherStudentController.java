@@ -1,7 +1,11 @@
 package com.fengjie.courseprogram.controller;
 
+import com.fengjie.courseprogram.model.entity.Class;
+import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.Student;
+import com.fengjie.courseprogram.server.ClassService;
 import com.fengjie.courseprogram.server.StudentService;
+import com.fengjie.courseprogram.server.TeacherService;
 import com.fengjie.courseprogram.util.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 /**
@@ -23,6 +28,28 @@ public class TeacherStudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private ClassService classService;
+
+    @Autowired
+    private TeacherService teacherService;
+
+    @GetMapping("")
+    public String teacherStudent(ModelMap map) {
+        map.addAttribute("active", "student");
+        return "teacher/teacherStudent";
+    }
+
+    @GetMapping("/classification")
+    public String teacherStudentClassification(ModelMap map, HttpSession session) {
+        map.addAttribute("sideActive", "classification");
+        map.addAttribute("active", "student");
+        Course course = (Course) session.getAttribute("course");
+        List<Class> classes = teacherService.getClassesByCourseId(course.getId());
+        map.addAttribute("classes", classes);
+        return "teacher/teacherStudentClassification";
+    }
 
     @GetMapping("/pages")
     public String teacherStudentPage(String classId, ModelMap map){
@@ -55,6 +82,25 @@ public class TeacherStudentController {
     @PostMapping("/delete")
     public @ResponseBody RestResponse deleteStudent(Student student){
         int i = studentService.deleteStudentById(student.getId());
+        if(i == 1){
+            return RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
+
+    @GetMapping("/addStudent")
+    public String addStudent(ModelMap map, HttpSession session){
+        Course course = (Course) session.getAttribute("course");
+        List<Class> classes = classService.getClassesByCourseId(course.getId());
+        map.addAttribute("classes",classes);
+        map.addAttribute("sideActive","addStudent");
+        map.addAttribute("active","student");
+        return "teacher/teacherAddStudent";
+    }
+
+    @PostMapping("/doAddStudent")
+    public @ResponseBody RestResponse addStudent(Student student){
+        int i = studentService.addStudent(student);
         if(i == 1){
             return RestResponse.success();
         }

@@ -8,4 +8,6 @@ public class ContantsStr {
 
     public final static String DEFAULT_SUB = "Program注册";
 
+    public final static String DEFAULT_PASSWORD = "123456";
+
 }

@@ -101,19 +101,9 @@
     // 提交表单
     function check_form() {
         var class_id = $.trim($('#class_id').val());
-        // var class_name = $.trim($('#class_name')).val();
-        // var act     = $.trim($('#act').val());
-
-        if (!class_id) {
-            alert('用户ID不能为空！');
-            return false;
-        }
-        // var form_data = $('#form_data').serialize();
-
-        // 异步提交数据到action/add_action.php页面
         $.ajax(
             {
-                url: "/teacher/class/updateClass",
+                url: "/teacher/class/saveClass",
                 data: $('#form_data').serialize(),
                 type: "post",
                 dataType: "json",
@@ -123,13 +113,15 @@
                 },
                 success: function (data) {
                     if (data.success) {
-                        var msg = "添加";
+                        var msg = "新增";
+                        if(class_id){
+                            msg = "修改";
+                        }
+
                         $("#tip").html("<span style='color:blueviolet'>恭喜，" + msg + "成功！</span>");
                         // document.location.href='system_notice.php'
-                        tale.alertOk("修改成功");
                         location.reload();
-                    }
-                    else {
+                    } else {
                         $("#tip").html("<span style='color:red'>失败，请重试</span>");
                         tale.alertError('操作失败');
                     }
@@ -160,17 +152,18 @@
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <!--<li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>-->
-                <!--<li><a href="#">Reports</a></li>-->
                 <li th:class="(${sideActive} == 'classification') ? 'active' : ''">
-                    <a th:href="(${sideActive} != 'classification') ? '/teacher/student/classification' : ''">学生分类</a>
+                    <a href="/teacher/student/classification">学生分类</a>
                 </li>
-                <li th:class="(${sideActive} == 'addStudeng') ? 'active' : ''">
-                    <a th:href="(${sideActive} != 'addStudeng') ? '/teacher/student/addStudeng' : ''">添加学生</a>
+                <li th:class="(${sideActive} == 'addStudent') ? 'active' : ''">
+                    <a href="/teacher/student/addStudent">添加学生</a>
                 </li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-sm-offset-9">
+                <button type="button" data-toggle="modal" data-target="#addUserModal" class="btn btn-info">添加班级</button>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -186,7 +179,7 @@
                             <a th:href="@{/teacher/student/pages(classId=${item.id})}" th:text="${item.name}"></a>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-info" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                            <button type="button" class="btn btn-warning" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
                             编辑</button>
                         </td>
                         <td>

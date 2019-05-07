@@ -1,10 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
+    <title>教师首页</title>
+
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <!--<link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">-->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<script>
+    var tale = new $.tale;
+
+    // 提交表单
+    function check_form() {
+        var class_id = $.trim($('#class_id').val());
+
+        if (!class_id) {
+            alert('用户ID不能为空！');
+            return false;
+        }
+
+        tale.post({
+            url: '/teacher/student/doAddStudent',
+            data: $('#form_data').serialize(),
+            success: function (result) {
+                if (result && result.success) {
+                    tale.alertOk("添加成功");
+                    $('#form_data')[0].reset();
+                } else {
+                    tale.alertError("添加失败");
+                }
+            }
+        });
+        return false;
+    }
+</script>
+
+<body>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li th:class="(${sideActive} == 'classification') ? 'active' : ''">
+                    <a href="/teacher/student/classification">学生分类</a>
+                </li>
+                <li th:class="(${sideActive} == 'addStudent') ? 'active' : ''">
+                    <a href="/teacher/student/addStudent">添加学生</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="main">
+                <form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()">
+                    <div class="form-group">
+                        <label for="class_id" class="col-sm-3 control-label">班级名</label>
+                        <select class="form-select-button" name="classId" id="class_id">
+                            <option th:each="item : ${classes}" th:text="${item.name}" th:value="${item.id}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="student_name" class="col-sm-3 control-label">学生名</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="student_name" name="name"
+                                   placeholder="学生姓名">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="col-sm-3 control-label">邮箱</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="email" value="" id="email"
+                                   placeholder="邮箱">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="student_code" class="col-sm-3 control-label">学号</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" name="studentCode" value="" id="student_code"
+                                   placeholder="学号">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="info" class="col-sm-3 control-label">备注</label>
+                        <div class="col-sm-9">
+                        <textarea class="form-control" name="info" id="info"
+                                  placeholder="备注">
+                        </textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        提交
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script th:src="@{/static/js/holder.min.js}"></script>
 </body>
 </html>

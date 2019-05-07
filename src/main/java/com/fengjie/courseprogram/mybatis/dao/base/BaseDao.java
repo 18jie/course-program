@@ -26,8 +26,8 @@ public abstract class BaseDao<B, M extends GenericMapper<B>> {
         return m.insert(b);
     }
 
-    public int insertSelective(Object o) {
-        return 0;
+    public int insertSelective(B o) {
+        return m.insertSelective(o);
     }
 
     public boolean existsWithPrimaryKey(Object o) {

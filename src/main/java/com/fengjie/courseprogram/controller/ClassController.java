@@ -32,17 +32,22 @@ public class ClassController {
         return RestResponse.fail();
     }
 
-    @PostMapping("/updateClass")
-    public @ResponseBody RestResponse updateClass(ClassParam classParam){
+    /**
+     * 修改或者新增班级
+     * @param classParam
+     * @return
+     */
+    @PostMapping("/saveClass")
+    public @ResponseBody RestResponse saveClass(ClassParam classParam){
         Class c = new Class();
-        c.setId(classParam.getClassId());
         c.setName(classParam.getClassName());
-        int i = classService.updateClassById(c);
+        int i = classService.saveClass(c);
         if(i == 1){
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
+
 
     @PostMapping("/delete")
     public @ResponseBody RestResponse deleteClass(ClassParam classParam){

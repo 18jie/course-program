@@ -1,7 +1,11 @@
 package com.fengjie.courseprogram.server;
 
+import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Class;
+import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.mybatis.dao.ClassDao;
+import com.fengjie.courseprogram.util.DateKit;
+import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +34,21 @@ public class ClassService {
 
     public Class getClassById(String classId) {
         return classDao.selectByPrimaryKey(classId);
+    }
+
+    public int saveClass(Class c){
+        if(StringUtils.isEmpty(c.getId())){
+            return addClass(c);
+        }
+        return updateClassById(c);
+    }
+
+    public int addClass(Class c){
+        c.setId(ObjectId.get().toString());
+        Course course = LoginUserContext.getCourse();
+        c.setCourseId(course.getId());
+        DateKit.addObject(c);
+        return classDao.insertSelective(c);
     }
 
     public int updateClassById(Class c) {

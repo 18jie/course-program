@@ -1,6 +1,9 @@
 package com.fengjie.courseprogram.interceptor;
 
 import com.fengjie.courseprogram.constants.context.LoginUserContext;
+import com.fengjie.courseprogram.model.entity.Course;
+import com.fengjie.courseprogram.model.entity.Student;
+import com.fengjie.courseprogram.model.entity.Teacher;
 import com.fengjie.courseprogram.model.entity.User;
 import com.fengjie.courseprogram.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,11 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
         String uri = request.getRequestURI();
         System.out.println(uri);
         log.debug(uri);
+
+        if(request.getSession().getAttribute("course") != null){
+            LoginUserContext.setCourse((Course) request.getSession().getAttribute("course"));
+        }
+
         if(StringUtils.isStaticResources(uri)) {
             return true;
         }
@@ -35,6 +43,7 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
             }
 
             if(request.getSession().getAttribute("teacher") != null){
+                LoginUserContext.setTeacher((Teacher) request.getSession().getAttribute("teacehr"));
                 return true;
             }else{
                 response.sendRedirect(request.getContextPath() +"/teacher/teacherLogin");
@@ -47,6 +56,7 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
             }
 
             if(request.getSession().getAttribute("student") != null){
+                LoginUserContext.setStudent((Student) request.getSession().getAttribute("student"));
                 return true;
             }else{
                 response.sendRedirect(request.getContextPath() + "/student/studentLogin");
@@ -70,7 +80,7 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-
+        LoginUserContext.remove();
     }
 
     @Override

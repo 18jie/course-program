@@ -1,9 +1,12 @@
 package com.fengjie.courseprogram.server;
 
+import com.fengjie.courseprogram.constants.ContantsStr;
 import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.param.Page;
 import com.fengjie.courseprogram.mybatis.dao.StudentDao;
+import com.fengjie.courseprogram.util.DateKit;
 import com.fengjie.courseprogram.util.MD5Kit;
+import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
@@ -26,25 +29,32 @@ public class StudentService {
         return studentDao.select(student);
     }
 
-    public int deleteStudentsByClassId(String classId){
+    public int deleteStudentsByClassId(String classId) {
         Student student = new Student();
         student.setClassId(classId);
         return studentDao.delete(student);
     }
 
-    public Student getStudentById(String studentId){
+    public Student getStudentById(String studentId) {
         return studentDao.selectByPrimaryKey(studentId);
     }
 
-    public int updateStudentById(Student student){
-        if(!StringUtils.isEmpty(student.getPassword())){
+    public int updateStudentById(Student student) {
+        if (!StringUtils.isEmpty(student.getPassword())) {
             student.setPassword(MD5Kit.convertMD5(student.getPassword()));
         }
         return studentDao.updateByPrimaryKeySelective(student);
     }
 
-    public int deleteStudentById(String id){
+    public int deleteStudentById(String id) {
         return studentDao.deleteByPrimaryKey(id);
+    }
+
+    public int addStudent(Student student) {
+        student.setPassword(MD5Kit.convertMD5(ContantsStr.DEFAULT_PASSWORD));
+        student.setId(ObjectId.get().toString());
+        DateKit.addObject(student);
+        return studentDao.insertSelective(student);
     }
 
 }
