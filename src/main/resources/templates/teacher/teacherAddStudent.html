@@ -18,7 +18,6 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
@@ -26,22 +25,27 @@
     <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
     <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
 
 <script>
     var tale = new $.tale;
+    // var editor;
+    // $(function () {
+    //     editor = CKEDITOR.replace('info');
+    // });
 
     // 提交表单
     function check_form() {
         var class_id = $.trim($('#class_id').val());
-
+        // var info = editor.document.getBody().getText();
         if (!class_id) {
             alert('用户ID不能为空！');
             return false;
@@ -113,8 +117,7 @@
                     <div class="form-group">
                         <label for="info" class="col-sm-3 control-label">备注</label>
                         <div class="col-sm-9">
-                        <textarea class="form-control" name="info" id="info"
-                                  placeholder="备注">
+                        <textarea class="info" name="info" id="info">
                         </textarea>
                         </div>
                     </div>

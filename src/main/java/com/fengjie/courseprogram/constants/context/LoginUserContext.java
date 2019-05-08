@@ -1,6 +1,7 @@
 package com.fengjie.courseprogram.constants.context;
 
 import com.fengjie.courseprogram.model.entity.*;
+import com.fengjie.courseprogram.model.param.LoggedThreadParam;
 
 /**
  * @author fengjie

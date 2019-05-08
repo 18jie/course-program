@@ -1,8 +1,7 @@
 package com.fengjie.courseprogram.server;
 
-import com.fengjie.courseprogram.constants.ContantsStr;
+import com.fengjie.courseprogram.constants.Constants;
 import com.fengjie.courseprogram.model.entity.Student;
-import com.fengjie.courseprogram.model.param.Page;
 import com.fengjie.courseprogram.mybatis.dao.StudentDao;
 import com.fengjie.courseprogram.util.DateKit;
 import com.fengjie.courseprogram.util.MD5Kit;
@@ -51,7 +50,7 @@ public class StudentService {
     }
 
     public int addStudent(Student student) {
-        student.setPassword(MD5Kit.convertMD5(ContantsStr.DEFAULT_PASSWORD));
+        student.setPassword(MD5Kit.convertMD5(Constants.DEFAULT_PASSWORD));
         student.setId(ObjectId.get().toString());
         DateKit.addObject(student);
         return studentDao.insertSelective(student);

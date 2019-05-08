@@ -1,9 +1,6 @@
 package com.fengjie.courseprogram.controller;
 
-import com.fengjie.courseprogram.constants.context.LoginUserContext;
-import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
-import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.entity.Teacher;
 import com.fengjie.courseprogram.model.param.LoginParam;
 import com.fengjie.courseprogram.server.TeacherService;
@@ -65,11 +62,6 @@ public class TeacherController {
     //学生管理 在teacherStudentController
 
     //作业管理
-
-    @GetMapping("/operation")
-    public String teacherOperation() {
-        return "teacher/teacherOperation";
-    }
 
     //考试管理
 

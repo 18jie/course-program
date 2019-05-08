@@ -1,6 +1,6 @@
 package com.fengjie.courseprogram.server;
 
-import com.fengjie.courseprogram.constants.ContantsStr;
+import com.fengjie.courseprogram.constants.Constants;
 import com.fengjie.courseprogram.model.param.EmailParam;
 import com.fengjie.courseprogram.util.EmailClient;
 import com.fengjie.courseprogram.util.StringUtils;
@@ -34,7 +34,7 @@ public class EmailService {
                 emailCode = (String) valueWrapper.get();
             }
         }
-        emailClient.sendTextEmail(email.getEmail(), ContantsStr.DEFAULT_SUB, emailCode);
+        emailClient.sendTextEmail(email.getEmail(), Constants.DEFAULT_SUB, emailCode);
     }
 
     public boolean checkEmailCode(String email, String code) {

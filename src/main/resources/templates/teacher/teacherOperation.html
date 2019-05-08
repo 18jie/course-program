@@ -1,10 +1,163 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>学生</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+
+    <script type="application/javascript">
+        var tale = new $.tale;
+
+        function addChoiceQuestion() {
+            window.location.href = '/teacher/operation/question/saveChoiceQuestion';
+        }
+
+        function addProgramQuestion() {
+            window.location.href = '/teacher/operation/question/saveProgramQuestion';
+        }
+
+        function get_edit_info(question_id,kind) {
+            if (!question_id) {
+                tale.alertError("信息错误");
+            } else {
+                if(kind == 1){
+                    //选择题
+                    window.location.href = '/teacher/operation/question/saveChoiceQuestion?questionId=' + question_id;
+                }else{
+                    //编程题
+                    window.location.href = '/teacher/operation/question/saveProgramQuestion?questionId=' + question_id;
+                }
+            }
+        }
+
+        function delete_info(question_id) {
+            if (!question_id) {
+                tale.alertError("信息错误");
+            } else {
+                tale.post({
+                    url: '/teacher/operation/question/saveProgramQuestion',
+                    data:{"id":question_id},
+                    success:function (result) {
+                        if(result && result.successs){
+                            tale.alertOk("删除成功");
+                        }else{
+                            tale.alertError("删除失败");
+                        }
+                    }
+                });
+                return false;
+            }
+        }
+
+    </script>
 </head>
 <body>
-
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li th:class="(${sideActive} == 'choiceQuestions') ? 'active' : ''">
+                    <a href="/teacher/operation/questions">题目概览</a>
+                </li>
+                <li th:class="(${sideActive} == 'operations') ? 'active' : ''">
+                    <a href="/teacher/operation/operations">作业列表</a>
+                </li>
+                <li th:class="(${sideActive} == 'addOperation') ? 'active' : ''">
+                    <a href="/teacher/operation/addOperation">布置作业</a>
+                </li>
+                <li th:class="(${sideActive} == 'rubbishOperations') ? 'active' : ''">
+                    <a href="/teacher/operation/rubbishOperations">垃圾桶</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-sm-offset-9">
+                <button type="button" onclick="addChoiceQuestion()" class="btn btn-info">添加选择题</button>
+            </div>
+            <div class="col-sm-offset-12">
+                <button type="button" onclick="addProgramQuestion()" class="btn btn-info">添加编程题</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>编号</th>
+                        <th>名称</th>
+                        <th>类型</th>
+                        <th>难度</th>
+                        <th>编辑</th>
+                        <th>删除</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${questions}">
+                        <td th:text="${item.questionNo}"></td>
+                        <td th:text="${item.title}"></td>
+                        <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
+                        <td><span
+                                th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
+                                th:text="(${item.level} == 1) ? '简单' : ((${item.level} == 2) ? '中等' : '困难')"></span>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal"
+                                    th:onclick="get_edit_info([[${item.id}]],[[${item.type}]])" data-target="#addUserModal">
+                                编辑
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger"
+                                    th:onclick="return delete_info([[${item.id}]])">删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <ul class="pager">
+                    <li th:class="(${questions.getPageNum()} == 1) ? 'previous active' : 'previous'">
+                        <a th:if="${questions.getPageNum()} != 1" th:href="@{/program/pages(current=${questions.getPageNum() - 1})}">&larr; Older</a>
+                        <span th:if="${questions.getPageNum()} == 1">&larr; Older</span>
+                    </li>
+                    <li th:each="pageNum : ${pageNums}" th:class="(${questions.getPageNum()} == ${pageNum}) ? 'active' : ''">
+                        <a th:if="${questions.getPageNum()} != ${pageNum}" th:href="@{/program/pages(current=${pageNum})}" th:text="${pageNum}"></a>
+                        <span th:if="${questions.getPageNum()} == ${pageNum}" th:text="${pageNum}"></span>
+                    </li>
+                    <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next active' : 'next'">
+                        <a th:if="${questions.getPageNum()} != ${questions.getPages()}" th:href="@{/program/pages(current=${questions.getPageNum() + 1})}">Newer &rarr;</a>
+                        <span th:if="${questions.getPageNum()} == ${questions.getPages()}">Newer &rarr;</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script th:src="@{/static/js/holder.min.js}"></script>
 </body>
 </html>
