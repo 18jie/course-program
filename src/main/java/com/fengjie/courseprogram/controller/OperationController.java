@@ -30,7 +30,7 @@ public class OperationController {
     public String listOperations(ModelMap map, HttpSession session) {
         Course course = (Course) session.getAttribute("course");
         map.addAttribute("active", "operation");
-        map.addAttribute("sideActive", "questions");
+        map.addAttribute("sideActive", "operations");
         List<Operation> operations =
                 opeartionService.listOperations(course.getId(), Constants.UNDELETE);
         map.addAttribute("operations", operations);
@@ -41,7 +41,7 @@ public class OperationController {
     public String listRubbishOperations(ModelMap map, HttpSession session) {
         Course course = (Course) session.getAttribute("course");
         map.addAttribute("active", "operation");
-        map.addAttribute("sideActive", "questions");
+        map.addAttribute("sideActive", "rubbishOperations");
         List<Operation> operations =
                 opeartionService.listOperations(course.getId(), Constants.DELETEED);
         map.addAttribute("operations", operations);
