@@ -33,15 +33,16 @@ public class CourseQuestionController {
 
     @GetMapping("/questions")
     public String teacherOperation(ModelMap map, String current) {
-        map.addAttribute("active","operation");
-        map.addAttribute("sideActive","questions");
+        map.addAttribute("active", "operation");
+        map.addAttribute("sideActive", "questions");
 
         Course course = LoginUserContext.getCourse();
         Page page;
         if (StringUtils.isEmpty(current)) {
             page = new Page(1, 12);
+        } else {
+            page = new Page(Integer.parseInt(current), 12);
         }
-        page = new Page(Integer.parseInt(current), 12);
         PageInfo<CourseQuestion> questions = courseQuestionService.pageQuestions(page, course.getId());
         map.addAttribute("questions", questions);
         if (questions.getPages() > 0) {
@@ -53,29 +54,58 @@ public class CourseQuestionController {
     }
 
     @GetMapping("/question/saveChoiceQuestion")
-    public String addChoiceQuestion(ModelMap map){
-        map.addAttribute("active","operation");
-        map.addAttribute("sideActive","questions");
+    public String addChoiceQuestion(ModelMap map, String questionId) {
+        map.addAttribute("active", "operation");
+        map.addAttribute("sideActive", "questions");
+        if (!StringUtils.isEmpty(questionId)) {
+            CourseQuestion questionById = courseQuestionService.getQuestionById(questionId);
+            map.addAttribute("question", questionById);
+        }
         return "teacher/teacherOperationAddChoiceQuestion";
     }
 
-    @GetMapping("/question/saveChoiceQuestion")
-    public String addProgramQuestion(ModelMap map){
-        map.addAttribute("active","operation");
-        map.addAttribute("sideActive","questions");
+    @GetMapping("/question/saveProgramQuestion")
+    public String addProgramQuestion(ModelMap map, String questionId) {
+        map.addAttribute("active", "operation");
+        map.addAttribute("sideActive", "questions");
+        if (!StringUtils.isEmpty(questionId)) {
+            CourseQuestion questionById = courseQuestionService.getQuestionById(questionId);
+            map.addAttribute("question", questionById);
+        }
         return "teacher/teacherOperationAddProgramQuestion";
     }
 
     @PostMapping("/question/doSaveQuestion")
     public @ResponseBody
-    RestResponse saveQuesion(ModelMap map,CourseQuestion courseQuestion){
+    RestResponse saveQuestion(CourseQuestion courseQuestion) {
+        Course course = LoginUserContext.getCourse();
+        courseQuestion.setCourseId(course.getId());
         int i = courseQuestionService.saveQuestion(courseQuestion);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
+    @PostMapping("/question/deleteQuestion")
+    public @ResponseBody
+    RestResponse deleteQuestion(CourseQuestion courseQuestion) {
+        int i = courseQuestionService.deleteQuestion(courseQuestion.getId());
+        if (i == 1) {
+            return RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
 
+    @PostMapping("/question/getSingleQuestion")
+    public @ResponseBody
+    RestResponse getSingleQuestion(CourseQuestion courseQuestion) {
+        Course course = LoginUserContext.getCourse();
+        CourseQuestion question = courseQuestionService.getSingleQuestionById(courseQuestion.getId(), course.getId());
+        if(null != question){
+            return RestResponse.success(question);
+        }
+        return RestResponse.fail();
+    }
 
 }

@@ -3,6 +3,7 @@ package com.fengjie.courseprogram.controller;
 import com.fengjie.courseprogram.constants.Constants;
 import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Course;
+import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.server.OpeartionService;
 import com.fengjie.courseprogram.util.RestResponse;
@@ -21,7 +22,7 @@ import java.util.List;
  * @date 2019/5/8 17:39
  */
 @Controller
-@RequestMapping("/teacher/operation")
+@RequestMapping("/teacher")
 public class OperationController {
     @Autowired
     private OpeartionService opeartionService;
@@ -52,28 +53,40 @@ public class OperationController {
     public @ResponseBody
     RestResponse logicDeleteOperation(String operationId) {
         int i = opeartionService.logicDeleteOperation(operationId);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
     @GetMapping("/deleteOperation")
-    public @ResponseBody RestResponse deleteOperation(String operationId){
+    public @ResponseBody
+    RestResponse deleteOperation(String operationId) {
         int i = opeartionService.deleteOperation(operationId);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
     @GetMapping("/rebirthOperation")
-    public @ResponseBody RestResponse rebirthOperation(String operationId){
+    public @ResponseBody
+    RestResponse rebirthOperation(String operationId) {
         int i = opeartionService.rebirthOperation(operationId);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
+    }
+
+    @GetMapping("/addOperation")
+    public String addOperation(ModelMap map) {
+        Course course = LoginUserContext.getCourse();
+        map.addAttribute("active", "operation");
+        map.addAttribute("sideActive", "addOperation");
+        List<CourseQuestion> questions = opeartionService.getAllCourseQuestionByCourseId(course.getId());
+        map.addAttribute("questions", questions);
+        return "teacher/teacherOperationAddOperation";
     }
 
 }

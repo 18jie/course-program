@@ -20,6 +20,8 @@ public class CourseQuestion extends BaseDO {
 
     private Integer type;
 
+    private Integer level;
+
     private String title;
 
     private String info;

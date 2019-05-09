@@ -1,8 +1,10 @@
 package com.fengjie.courseprogram.server;
 
 import com.fengjie.courseprogram.constants.Constants;
+import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.mybatis.dao.OperationDao;
+import com.fengjie.courseprogram.util.DateKit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,9 @@ public class OpeartionService {
     @Autowired
     private OperationDao operationDao;
 
+    @Autowired
+    private CourseQuestionService courseQuestionService;
+
     public List<Operation> listOperations(String courseId, int deleteFlag) {
         Operation operation = new Operation();
         operation.setCourseId(courseId);
@@ -29,6 +34,7 @@ public class OpeartionService {
         Operation operation = new Operation();
         operation.setId(operationId);
         operation.setDeleteFlag(Constants.DELETEED);
+        DateKit.teacherUpdate(operation);
         return operationDao.updateByPrimaryKeySelective(operation);
     }
 
@@ -40,12 +46,17 @@ public class OpeartionService {
         Operation operation = new Operation();
         operation.setId(operationId);
         operation.setDeleteFlag(Constants.UNDELETE);
+        DateKit.teacherUpdate(operation);
         return operationDao.updateByPrimaryKeySelective(operation);
     }
 
     public int updateOperation(Operation operation) {
+        DateKit.teacherUpdate(operation);
         return operationDao.updateByPrimaryKeySelective(operation);
     }
 
+    public List<CourseQuestion> getAllCourseQuestionByCourseId(String courseId) {
+        return courseQuestionService.getAllQuestion(courseId);
+    }
 
 }

@@ -43,7 +43,7 @@ public class UserLoginInterceptor extends HandlerInterceptorAdapter {
             }
 
             if(request.getSession().getAttribute("teacher") != null){
-                LoginUserContext.setTeacher((Teacher) request.getSession().getAttribute("teacehr"));
+                LoginUserContext.setTeacher((Teacher) request.getSession().getAttribute("teacher"));
                 return true;
             }else{
                 response.sendRedirect(request.getContextPath() +"/teacher/teacherLogin");

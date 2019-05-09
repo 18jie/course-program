@@ -38,6 +38,7 @@ public class TeacherController {
         Teacher teacher = teacherService.loginCheck(loginParam);
         if (null != teacher) {
             session.setAttribute("teacher", teacher);
+            session.removeAttribute("course");
             return RestResponse.success();
         }
         return RestResponse.fail("账号或密码错误");
