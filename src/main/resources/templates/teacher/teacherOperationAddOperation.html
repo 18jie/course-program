@@ -45,13 +45,21 @@
     }
 
     function get_edit_info(question_id) {
-        if(!question_id){
+        if (!question_id) {
             tale.alertError("信息错误");
             return false;
         }
         tale.post({
-            url:""
-        })
+            url: "/teacher/operation/question/getSingleQuestion",
+            data: {id: question_id},
+            success: function (result) {
+                if (result && result.success) {
+                    $('#question_data').html(result.payload.info);
+                }else{
+                    tale.alertError("请求失败");
+                }
+            }
+        });
         return false;
     }
 </script>
@@ -91,9 +99,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="item : ${questions}">
-                            <input type="checkbox" th:value="${item.id}"/>
+                            <td><input type="checkbox" th:value="${item.id}"/></td>
                             <td th:text="${item.questionNo}"></td>
-                            <td><span th:text="${item.title}" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal"></span></td>
+                            <td><span th:text="${item.title}" data-toggle="modal"
+                                      th:onclick="return get_edit_info([[${item.id}]])"
+                                      data-target="#addUserModal"></span></td>
                             <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
                             <td><span
                                     th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
@@ -103,7 +113,8 @@
                     </table>
                     <div>
                         <button style="display: inline;" type="button" class="btn btn-primary">上一步</button>
-                        <button style="display: inline;padding-left: 30%" type="submit" class="btn btn-primary">下一步</button>
+                        <button style="display: inline;margin-left: 50%;" type="submit" class="btn btn-primary">下一步
+                        </button>
                     </div>
 
                 </form>
@@ -112,29 +123,29 @@
     </div>
 </div>
 <!-- 模态框示例（Modal） -->
-    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        ×
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        题目信息
-                    </h4>
-                </div>
-                <div class="modal-body">
-                        <div id="question_data"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                    </button>
-                    <span id="tip"> </span>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    ×
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    题目信息
+                </h4>
+            </div>
+            <div class="modal-body">
+                <div id="question_data"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+                <span id="tip"> </span>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->
