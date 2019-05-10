@@ -19,17 +19,17 @@ import org.springframework.stereotype.Service;
 public class EmailService {
     @Autowired
     @Qualifier("emailCache")
-    private CaffeineCache emailCache;
+    private CaffeineCache cache;
 
     @Async("asyncServiceExecutor")
     public void sendTextEmail(EmailParam email) {
         EmailClient emailClient = EmailClient.getInstance();
         String emailCode;
         synchronized (emailClient) {
-            Cache.ValueWrapper valueWrapper = emailCache.get(email.getEmail());
+            Cache.ValueWrapper valueWrapper = cache.get(email.getEmail());
             if (valueWrapper == null) {
                 emailCode = StringUtils.getEmailCode();
-                emailCache.put(email.getEmail(), emailCode);
+                cache.put(email.getEmail(), emailCode);
             } else {
                 emailCode = (String) valueWrapper.get();
             }
@@ -38,7 +38,7 @@ public class EmailService {
     }
 
     public boolean checkEmailCode(String email, String code) {
-        return emailCache.get(email) != null && code.equals((String) emailCache.get(email).get());
+        return cache.get(email) != null && code.equals((String) cache.get(email).get());
     }
 
 }

@@ -38,9 +38,43 @@
 <script>
     var tale = new $.tale;
 
+    function uuid() {
+        var s = [];
+        var hexDigits = "0123456789abcdef";
+        for (var i = 0; i < 36; i++) {
+            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+        }
+        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+        s[8] = s[13] = s[18] = s[23] = "-";
+
+        var uuid = s.join("");
+        return uuid;
+    }
+
     // 提交表单
     function check_form() {
-
+        var checked = [];
+        $('input:checkbox:checked').each(function () {
+            checked.push($(this).val());
+        });
+        if (checked.length == 0) {
+            tale.alertError("未选择题目");
+            return false;
+        }
+        var uuid = uuid();
+        tale.post({
+            url: '/teacher/operation/submitCheckedQuestions',
+            data: {"uuid": uuid, "questionIds": checked},
+            success: function (result) {
+                if (result && result.success) {
+                    var url = '/teacher/operation/operationNextStep?uuid=' + uuid;
+                    window.location.href = url;
+                } else {
+                    tale.alertError("数据提交异常");
+                }
+            }
+        });
         return false;
     }
 
@@ -55,7 +89,7 @@
             success: function (result) {
                 if (result && result.success) {
                     $('#question_data').html(result.payload.info);
-                }else{
+                } else {
                     tale.alertError("请求失败");
                 }
             }
@@ -74,13 +108,13 @@
                     <a href="/teacher/operation/questions">题目概览</a>
                 </li>
                 <li th:class="(${sideActive} == 'operations') ? 'active' : ''">
-                    <a href="/teacher/operations">作业列表</a>
+                    <a href="/teacher/operation/operations">作业列表</a>
                 </li>
                 <li th:class="(${sideActive} == 'addOperation') ? 'active' : ''">
-                    <a href="/teacher/addOperation">布置作业</a>
+                    <a href="/teacher/operation/addOperation">布置作业</a>
                 </li>
                 <li th:class="(${sideActive} == 'rubbishOperations') ? 'active' : ''">
-                    <a href="/teacher/rubbishOperations">垃圾桶</a>
+                    <a href="/teacher/operation/rubbishOperations">垃圾桶</a>
                 </li>
             </ul>
         </div>
@@ -101,7 +135,8 @@
                         <tr th:each="item : ${questions}">
                             <td><input type="checkbox" th:value="${item.id}"/></td>
                             <td th:text="${item.questionNo}"></td>
-                            <td><span th:text="${item.title}" data-toggle="modal"
+                            <td><span style="color: #428bca;cursor: pointer;" th:text="${item.title}"
+                                      data-toggle="modal"
                                       th:onclick="return get_edit_info([[${item.id}]])"
                                       data-target="#addUserModal"></span></td>
                             <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>

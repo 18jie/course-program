@@ -5,12 +5,14 @@ import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
+import com.fengjie.courseprogram.model.param.OperationQuestionParam;
 import com.fengjie.courseprogram.server.OpeartionService;
 import com.fengjie.courseprogram.util.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,7 +24,7 @@ import java.util.List;
  * @date 2019/5/8 17:39
  */
 @Controller
-@RequestMapping("/teacher")
+@RequestMapping("/teacher/operation")
 public class OperationController {
     @Autowired
     private OpeartionService opeartionService;
@@ -87,6 +89,23 @@ public class OperationController {
         List<CourseQuestion> questions = opeartionService.getAllCourseQuestionByCourseId(course.getId());
         map.addAttribute("questions", questions);
         return "teacher/teacherOperationAddOperation";
+    }
+
+    @PostMapping("/submitCheckedQuestions")
+    public @ResponseBody
+    RestResponse submitCheckedQuestion(OperationQuestionParam operationQuestionParam) {
+        boolean b = opeartionService.saveOperationQuestionsTemp(operationQuestionParam);
+        if (b) {
+            return RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
+
+    @GetMapping("/operationNextStep")
+    public String operationNextStep(String uuid,ModelMap map){
+        map.addAttribute("active", "operation");
+        map.addAttribute("sideActive", "addOperation");
+        return null;
     }
 
 }

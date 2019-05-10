@@ -80,4 +80,11 @@ public class CourseQuestionService {
         return courseQuestionDao.select(courseQuestion);
     }
 
+    public List<CourseQuestion> getQuestionsByIds(List<String> ids) {
+        Example example = new Example(CourseQuestion.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andIn("id", ids);
+        return courseQuestionDao.selectByExample(example);
+    }
+
 }
