@@ -1,20 +1,20 @@
 package com.fengjie.courseprogram.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.fengjie.courseprogram.constants.Constants;
 import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.model.param.OperationQuestionParam;
+import com.fengjie.courseprogram.model.param.SubmitQuestionParam;
+import com.fengjie.courseprogram.model.queryvo.OperationVO;
 import com.fengjie.courseprogram.server.OpeartionService;
 import com.fengjie.courseprogram.util.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -34,8 +34,7 @@ public class OperationController {
         Course course = (Course) session.getAttribute("course");
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "operations");
-        List<Operation> operations =
-                opeartionService.listOperations(course.getId(), Constants.UNDELETE);
+        List<OperationVO> operations = opeartionService.transferToVO(opeartionService.listOperations(course.getId(), Constants.UNDELETE));
         map.addAttribute("operations", operations);
         return "teacher/teacherOperationOperations";
     }
@@ -45,16 +44,15 @@ public class OperationController {
         Course course = (Course) session.getAttribute("course");
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "rubbishOperations");
-        List<Operation> operations =
-                opeartionService.listOperations(course.getId(), Constants.DELETEED);
+        List<OperationVO> operations = opeartionService.transferToVO(opeartionService.listOperations(course.getId(), Constants.DELETEED));
         map.addAttribute("operations", operations);
         return "teacher/teacherOperationRubbish";
     }
 
-    @GetMapping("/logicDeleteOperation")
+    @PostMapping("/logicDeleteOperation")
     public @ResponseBody
-    RestResponse logicDeleteOperation(String operationId) {
-        int i = opeartionService.logicDeleteOperation(operationId);
+    RestResponse logicDeleteOperation(Operation operation) {
+        int i = opeartionService.logicDeleteOperation(operation.getId());
         if (i == 1) {
             return RestResponse.success();
         }
@@ -63,18 +61,18 @@ public class OperationController {
 
     @GetMapping("/deleteOperation")
     public @ResponseBody
-    RestResponse deleteOperation(String operationId) {
-        int i = opeartionService.deleteOperation(operationId);
+    RestResponse deleteOperation(Operation operation) {
+        int i = opeartionService.deleteOperation(operation.getId());
         if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
-    @GetMapping("/rebirthOperation")
+    @PostMapping("/rebirthOperation")
     public @ResponseBody
-    RestResponse rebirthOperation(String operationId) {
-        int i = opeartionService.rebirthOperation(operationId);
+    RestResponse rebirthOperation(Operation operation) {
+        int i = opeartionService.rebirthOperation(operation.getId());
         if (i == 1) {
             return RestResponse.success();
         }
@@ -91,9 +89,15 @@ public class OperationController {
         return "teacher/teacherOperationAddOperation";
     }
 
+    /**
+     * 暂时有bug
+     * @param jsonStr
+     * @return
+     */
     @PostMapping("/submitCheckedQuestions")
     public @ResponseBody
-    RestResponse submitCheckedQuestion(OperationQuestionParam operationQuestionParam) {
+    RestResponse submitCheckedQuestion(String jsonStr) {
+        OperationQuestionParam operationQuestionParam = JSON.parseObject(jsonStr, OperationQuestionParam.class);
         boolean b = opeartionService.saveOperationQuestionsTemp(operationQuestionParam);
         if (b) {
             return RestResponse.success();
@@ -101,11 +105,45 @@ public class OperationController {
         return RestResponse.fail();
     }
 
+    /**
+     * 暂时有bug
+     * @param uuid
+     * @param map
+     * @return
+     */
     @GetMapping("/operationNextStep")
-    public String operationNextStep(String uuid,ModelMap map){
+    public String operationNextStep(String uuid, ModelMap map) {
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "addOperation");
-        return null;
+        List<CourseQuestion> checkedQuestions = opeartionService.getCheckedQuestions(uuid);
+        map.addAttribute("questions", checkedQuestions);
+        return "teacher/teacherOperationNextStep";
     }
+
+    @PostMapping("/submitQuestionMessage")
+    public @ResponseBody RestResponse submitQuestionMessage(SubmitQuestionParam submitQuestionParam){
+
+        return RestResponse.fail();
+    }
+
+    @PostMapping("/saveOperation")
+    public @ResponseBody RestResponse saveOperation(Operation operation){
+        int i = opeartionService.saveOpeartion(operation);
+        if(i == 1){
+            RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
+
+    @PostMapping("/getSingleOperation")
+    public @ResponseBody RestResponse getSingleOperation(Operation operation){
+        Operation operationById = opeartionService.getOperationById(operation.getId());
+        OperationVO operationVO = opeartionService.transferToVO(operationById);
+        if(null != operationVO){
+            return RestResponse.success(operationVO);
+        }
+        return RestResponse.fail();
+    }
+
 
 }

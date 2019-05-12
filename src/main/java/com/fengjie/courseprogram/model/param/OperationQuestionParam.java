@@ -1,6 +1,7 @@
 package com.fengjie.courseprogram.model.param;
 
 import lombok.Data;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class OperationQuestionParam {
 
     private String uuid;
+
 
     private List<String> questionIds;
 

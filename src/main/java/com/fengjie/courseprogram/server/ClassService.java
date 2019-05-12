@@ -47,7 +47,7 @@ public class ClassService {
         c.setId(ObjectId.get().toString());
         Course course = LoginUserContext.getCourse();
         c.setCourseId(course.getId());
-        DateKit.addObject(c);
+        DateKit.teacherAdd(c);
         return classDao.insertSelective(c);
     }
 
@@ -55,6 +55,7 @@ public class ClassService {
         if (StringUtils.isEmpty(c.getId())) {
             throw new RuntimeException("未填写id");
         }
+        DateKit.teacherUpdate(c);
         return classDao.updateByPrimaryKeySelective(c);
     }
 

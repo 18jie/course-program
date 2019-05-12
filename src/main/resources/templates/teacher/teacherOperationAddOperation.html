@@ -38,23 +38,17 @@
 <script>
     var tale = new $.tale;
 
-    function uuid() {
-        var s = [];
-        var hexDigits = "0123456789abcdef";
-        for (var i = 0; i < 36; i++) {
-            s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    function guid() {
+        function S4() {
+            return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
         }
-        s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
-        s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
-        s[8] = s[13] = s[18] = s[23] = "-";
 
-        var uuid = s.join("");
-        return uuid;
+        return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
     }
 
     // 提交表单
     function check_form() {
-        var checked = [];
+        var checked = new Array();
         $('input:checkbox:checked').each(function () {
             checked.push($(this).val());
         });
@@ -62,10 +56,15 @@
             tale.alertError("未选择题目");
             return false;
         }
-        var uuid = uuid();
-        tale.post({
+        var uuid = guid();
+        var mydata = {uuid: uuid, questionIds: checked};
+        // var jsonChecked = JSON.stringify(checked);
+        $.ajax({
             url: '/teacher/operation/submitCheckedQuestions',
-            data: {"uuid": uuid, "questionIds": checked},
+            data: JSON.stringify(mydata),
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: "text",
             success: function (result) {
                 if (result && result.success) {
                     var url = '/teacher/operation/operationNextStep?uuid=' + uuid;
@@ -147,9 +146,7 @@
                         </tbody>
                     </table>
                     <div>
-                        <button style="display: inline;" type="button" class="btn btn-primary">上一步</button>
-                        <button style="display: inline;margin-left: 50%;" type="submit" class="btn btn-primary">下一步
-                        </button>
+                        <button type="submit" class="btn btn-primary">下一步</button>
                     </div>
 
                 </form>

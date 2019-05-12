@@ -41,6 +41,7 @@ public class ClassController {
     public @ResponseBody RestResponse saveClass(ClassParam classParam){
         Class c = new Class();
         c.setName(classParam.getClassName());
+        c.setId(classParam.getClassId());
         int i = classService.saveClass(c);
         if(i == 1){
             return RestResponse.success();
