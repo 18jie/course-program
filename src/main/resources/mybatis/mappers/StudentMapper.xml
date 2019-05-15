@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengjie.courseprogram.mybatis.mappers.StudentMapper">
+
+    <insert id="batchInsert" parameterType="list">
+        insert into student
+        (id,class_id,name,email,password,student_code,info,create_user,create_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},#{item.classId},#{item.name},#{item.email},#{item.password}
+            ,#{item.studentCode},#{item.info},#{item.createUser},#{item.createTime})
+        </foreach>
+    </insert>
+
+</mapper>

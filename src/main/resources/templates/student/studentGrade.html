@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>教师首页</title>
+
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <!--<link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">-->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<script>
+    var tale = new $.tale;
+
+    // 编辑表单
+    function get_edit_info(class_id) {
+        if (!class_id) {
+            alert('Error！');
+            return false;
+        }
+
+        tale.post({
+            url:'/student/getGrade',
+            data:{"operationId": class_id},
+            success:function (result) {
+                if(result && result.success){
+                    $("#grade").val(result.payload.grade);
+                }else{
+                    tale.alertError("服务器错误");
+                }
+            }
+        });
+
+        return false;
+    }
+
+</script>
+
+<body>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li th:class="(${sideActive} == 'grade') ? 'active' : ''">
+                    <a href="student/gradeList">成绩列表</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="col-sm-offset-9">
+                <button type="button" data-toggle="modal" data-target="#addUserModal" class="btn btn-info">添加班级</button>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>作业名</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>查看成绩</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${operations}">
+                        <td th:text="${item.title}"></td>
+                        <td th:text="${item.startTime}"></td>
+                        <td th:text="${item.endTime}"></td>
+                        <td>
+                            <button type="button" class="btn btn-info" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                                查看成绩</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- 模态框示例（Modal） -->
+<form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()"
+      style="margin: 20px;">
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        用户信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p id="grade"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <span id="tip"> </span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script th:src="@{/static/js/holder.min.js}"></script>
+</body>
+</html>

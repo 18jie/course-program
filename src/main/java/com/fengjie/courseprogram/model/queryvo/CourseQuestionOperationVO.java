@@ -10,10 +10,19 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class CourseQuestionOperationVO extends CourseQuestion {
+public class CourseQuestionOperationVO extends CourseQuestion implements Comparable<CourseQuestionOperationVO> {
 
     private Integer OperationNo;
 
     private Integer singleGrade;
 
+    @Override
+    public int compareTo(CourseQuestionOperationVO o) {
+        if (this.getOperationNo() > o.getOperationNo()) {
+            return 1;
+        } else if (this.getOperationNo() < o.getOperationNo()) {
+            return -1;
+        }
+        return 0;
+    }
 }

@@ -1,8 +1,11 @@
 package com.fengjie.courseprogram.controller;
 
+import com.fengjie.courseprogram.constants.context.LoginUserContext;
+import com.fengjie.courseprogram.exceptions.BusinessException;
 import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.Student;
+import com.fengjie.courseprogram.model.param.StudentBatchAddParam;
 import com.fengjie.courseprogram.server.ClassService;
 import com.fengjie.courseprogram.server.StudentService;
 import com.fengjie.courseprogram.server.TeacherService;
@@ -52,59 +55,86 @@ public class TeacherStudentController {
     }
 
     @GetMapping("/pages")
-    public String teacherStudentPage(String classId, ModelMap map){
+    public String teacherStudentPage(String classId, ModelMap map) {
         map.addAttribute("sideActive", "classification");
         map.addAttribute("active", "student");
         List<Student> students = studentService.getStudentsByClassId(classId);
-        map.addAttribute("students",students);
+        map.addAttribute("students", students);
         return "teacher/teacherStudentPage";
     }
 
     @PostMapping("/get")
     public @ResponseBody
-    RestResponse getStudentInfo(Student student){
+    RestResponse getStudentInfo(Student student) {
         Student studentById = studentService.getStudentById(student.getId());
-        if(null != studentById){
+        if (null != studentById) {
             return RestResponse.success(studentById);
         }
         return RestResponse.fail();
     }
 
     @PostMapping("/update")
-    public @ResponseBody RestResponse updateStudent(Student student){
+    public @ResponseBody
+    RestResponse updateStudent(Student student) {
         int i = studentService.updateStudentById(student);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
     @PostMapping("/delete")
-    public @ResponseBody RestResponse deleteStudent(Student student){
+    public @ResponseBody
+    RestResponse deleteStudent(Student student) {
         int i = studentService.deleteStudentById(student.getId());
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
     }
 
     @GetMapping("/addStudent")
-    public String addStudent(ModelMap map, HttpSession session){
+    public String addStudent(ModelMap map, HttpSession session) {
         Course course = (Course) session.getAttribute("course");
         List<Class> classes = classService.getClassesByCourseId(course.getId());
-        map.addAttribute("classes",classes);
-        map.addAttribute("sideActive","addStudent");
-        map.addAttribute("active","student");
+        map.addAttribute("classes", classes);
+        map.addAttribute("sideActive", "addStudent");
+        map.addAttribute("active", "student");
         return "teacher/teacherAddStudent";
     }
 
     @PostMapping("/doAddStudent")
-    public @ResponseBody RestResponse addStudent(Student student){
+    public @ResponseBody
+    RestResponse addStudent(Student student) {
         int i = studentService.addStudent(student);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
         }
         return RestResponse.fail();
+    }
+
+    @GetMapping("/batchAddStudents")
+    public String batchAddStudents(ModelMap map) {
+        Course course = LoginUserContext.getCourse();
+        List<Class> classes = classService.getClassesByCourseId(course.getId());
+        map.addAttribute("classes", classes);
+        map.addAttribute("sideActive", "batchAdd");
+        map.addAttribute("active", "student");
+        return "teacher/teacherBatchAddStudents";
+    }
+
+    @PostMapping("/doBatchAddStudents")
+    public @ResponseBody RestResponse doBatchAddStudents(StudentBatchAddParam studentBatchAddParam) {
+        try {
+            studentService.batchAddStudents(studentBatchAddParam);
+        } catch (BusinessException e) {
+            e.printStackTrace();
+            return RestResponse.fail(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RestResponse.fail("服务器错误");
+        }
+        return RestResponse.success();
     }
 
 }

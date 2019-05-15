@@ -1,10 +1,13 @@
 package com.fengjie.courseprogram.server;
 
 import com.fengjie.courseprogram.constants.Constants;
+import com.fengjie.courseprogram.exceptions.BusinessException;
+import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.model.param.OperationQuestionParam;
 import com.fengjie.courseprogram.model.param.SubmitQuestionParam;
+import com.fengjie.courseprogram.model.queryvo.CourseQuestionOperationVO;
 import com.fengjie.courseprogram.model.queryvo.OperationVO;
 import com.fengjie.courseprogram.mybatis.dao.OperationDao;
 import com.fengjie.courseprogram.util.DateKit;
@@ -21,7 +24,10 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author fengjie
@@ -40,6 +46,9 @@ public class OpeartionService {
 
     @Autowired
     private CourseQuestionService courseQuestionService;
+
+    @Autowired
+    private ClassService classService;
 
     public List<Operation> listOperations(String courseId, int deleteFlag) {
         Operation operation = new Operation();
@@ -99,7 +108,29 @@ public class OpeartionService {
         }
 
         if (!StringUtils.isEmpty(operation.getQuestions())) {
+            List<CourseQuestionOperationVO> questionVOs = new ArrayList<>();
+            List<String> questionIds = new ArrayList<>();
+            Map<String, CourseQuestion> qMap = new HashMap<>();
             //处理作业
+            String questions = operation.getQuestions();
+            String[] split = questions.split(";");
+
+            for (String aSplit : split) {
+                CourseQuestionOperationVO questionOperationVO = new CourseQuestionOperationVO();
+                String[] question = aSplit.split(",");
+                questionIds.add(question[0]);
+                questionOperationVO.setId(question[0]);
+                questionOperationVO.setOperationNo(Integer.parseInt(question[1]));
+                questionOperationVO.setSingleGrade(Integer.parseInt(question[2]));
+                questionVOs.add(questionOperationVO);
+            }
+            List<CourseQuestion> questionList = courseQuestionService.getQuestionsByIds(questionIds);
+            if (questionList.size() != questionVOs.size()) {
+                throw new BusinessException("数据异常");
+            }
+            questionList.forEach(q -> qMap.put(q.getId(), q));
+            questionVOs.forEach(q -> BeanUtils.copyProperties(qMap.get(q.getId()), q));
+
         }
         return operationVO;
     }
@@ -155,17 +186,26 @@ public class OpeartionService {
     /**
      * 处理从具体的添加作业的信息
      *
-     * @param param
+     * @param operation
      * @return
      */
-    public int submitQuestionMsg(SubmitQuestionParam param) {
-        Operation operation = new Operation();
+    public int submitQuestionMsg(Operation operation) {
         operation.setId(ObjectId.get().toString());
-        operation.setTitle(param.getTitle());
-        operation.setStartTime(param.getStartTime());
-        operation.setEndTime(param.getEndTime());
         DateKit.teacherAdd(operation);
-        return operationDao.insert(operation);
+        return operationDao.insertSelective(operation);
+    }
+
+    public List<Class> getClassesByCourseId(String courseId) {
+        return classService.getClassesByCourseId(courseId);
+    }
+
+    /**
+     * 通过example查询指定条件的operations
+     * @param example
+     * @return
+     */
+    public List<Operation> getOperationsByExample(Example example) {
+        return operationDao.selectByExample(example);
     }
 
 }

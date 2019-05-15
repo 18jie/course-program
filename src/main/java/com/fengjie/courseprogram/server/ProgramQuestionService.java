@@ -49,7 +49,7 @@ public class ProgramQuestionService {
      * @param out
      * @return
      */
-    private RestResponse handleProgram(String program, String in, String out) {
+    public RestResponse handleProgram(String program, String in, String out) {
         CustomStringJavaCompiler compiler = new CustomStringJavaCompiler(program);
         boolean res = compiler.compiler();
         if (res) {

@@ -57,14 +57,14 @@
             return false;
         }
         var uuid = guid();
-        var mydata = {uuid: uuid, questionIds: checked};
+        var mydata = {"uuid": uuid, "questionIds": checked};
         // var jsonChecked = JSON.stringify(checked);
         $.ajax({
             url: '/teacher/operation/submitCheckedQuestions',
             data: JSON.stringify(mydata),
             type: 'POST',
-            contentType: 'application/json',
-            dataType: "text",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function (result) {
                 if (result && result.success) {
                     var url = '/teacher/operation/operationNextStep?uuid=' + uuid;

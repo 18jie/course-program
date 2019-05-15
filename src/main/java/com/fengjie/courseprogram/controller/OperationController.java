@@ -3,6 +3,7 @@ package com.fengjie.courseprogram.controller;
 import com.alibaba.fastjson.JSON;
 import com.fengjie.courseprogram.constants.Constants;
 import com.fengjie.courseprogram.constants.context.LoginUserContext;
+import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
@@ -59,7 +60,7 @@ public class OperationController {
         return RestResponse.fail();
     }
 
-    @GetMapping("/deleteOperation")
+    @PostMapping("/deleteOperation")
     public @ResponseBody
     RestResponse deleteOperation(Operation operation) {
         int i = opeartionService.deleteOperation(operation.getId());
@@ -91,13 +92,13 @@ public class OperationController {
 
     /**
      * 暂时有bug
-     * @param jsonStr
+     *
+     * @param operationQuestionParam
      * @return
      */
     @PostMapping("/submitCheckedQuestions")
     public @ResponseBody
-    RestResponse submitCheckedQuestion(String jsonStr) {
-        OperationQuestionParam operationQuestionParam = JSON.parseObject(jsonStr, OperationQuestionParam.class);
+    RestResponse submitCheckedQuestion(@RequestBody OperationQuestionParam operationQuestionParam) {
         boolean b = opeartionService.saveOperationQuestionsTemp(operationQuestionParam);
         if (b) {
             return RestResponse.success();
@@ -107,39 +108,51 @@ public class OperationController {
 
     /**
      * 暂时有bug
+     *
      * @param uuid
      * @param map
      * @return
      */
     @GetMapping("/operationNextStep")
     public String operationNextStep(String uuid, ModelMap map) {
+        Course course = LoginUserContext.getCourse();
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "addOperation");
         List<CourseQuestion> checkedQuestions = opeartionService.getCheckedQuestions(uuid);
+        List<Class> classes = opeartionService.getClassesByCourseId(course.getId());
         map.addAttribute("questions", checkedQuestions);
+        map.addAttribute("classes", classes);
         return "teacher/teacherOperationNextStep";
     }
 
-    @PostMapping("/submitQuestionMessage")
-    public @ResponseBody RestResponse submitQuestionMessage(SubmitQuestionParam submitQuestionParam){
-
+    @PostMapping("/submitQuestionMsg")
+    public @ResponseBody
+    RestResponse submitQuestionMessage(Operation operation) {
+        Course course = LoginUserContext.getCourse();
+        operation.setCourseId(course.getId());
+        int i = opeartionService.submitQuestionMsg(operation);
+        if (i == 1) {
+            return RestResponse.success();
+        }
         return RestResponse.fail();
     }
 
     @PostMapping("/saveOperation")
-    public @ResponseBody RestResponse saveOperation(Operation operation){
+    public @ResponseBody
+    RestResponse saveOperation(Operation operation) {
         int i = opeartionService.saveOpeartion(operation);
-        if(i == 1){
+        if (i == 1) {
             RestResponse.success();
         }
         return RestResponse.fail();
     }
 
     @PostMapping("/getSingleOperation")
-    public @ResponseBody RestResponse getSingleOperation(Operation operation){
+    public @ResponseBody
+    RestResponse getSingleOperation(Operation operation) {
         Operation operationById = opeartionService.getOperationById(operation.getId());
         OperationVO operationVO = opeartionService.transferToVO(operationById);
-        if(null != operationVO){
+        if (null != operationVO) {
             return RestResponse.success(operationVO);
         }
         return RestResponse.fail();

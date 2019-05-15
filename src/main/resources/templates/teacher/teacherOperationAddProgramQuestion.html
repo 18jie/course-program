@@ -67,16 +67,16 @@
             success: function (result) {
                 if (result && result.success) {
                     tale.alertOk("添加成功");
-                    if(!id){
+                    if (!id) {
                         $('#form_data')[0].reset();
                         editor.setData("");
-                    }else{
-                        window.location.href="/teacher/operation/questions";
+                    } else {
+                        window.location.href = "/teacher/operation/questions";
                     }
                 } else {
-                    if(!id){
+                    if (!id) {
                         tale.alertError("添加失败");
-                    }else{
+                    } else {
                         tale.alertError("修改失败");
                     }
 
@@ -115,7 +115,8 @@
                         <input type="hidden" id="id" name="id" th:value="${question} ? ${question.id} : ''"/>
                         <label for="title" class="col-sm-3 control-label">标题</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" th:value="${question} ? ${question.title} : ''" id="title" name="title"
+                            <input type="text" class="form-control" th:value="${question} ? ${question.title} : ''"
+                                   id="title" name="title"
                                    placeholder="标题">
                         </div>
                     </div>
@@ -123,7 +124,8 @@
                     <div class="form-group">
                         <label for="question_id" class="col-sm-3 control-label">题号</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" th:value="${question} ? ${question.questionNo} : ''" name="questionNo"
+                            <input type="text" class="form-control" th:value="${question} ? ${question.questionNo} : ''"
+                                   name="questionNo"
                                    value="" id="question_id"
                                    placeholder="题号">
                         </div>
@@ -132,16 +134,22 @@
                     <div class="form-group">
                         <label for="level" class="col-sm-3 control-label">难度</label>
                         <select class="form-select-button" id="level">
-                            <option th:selected="${question} ? ((${question.level} == 1) ? 'selected' : '') : ''" value="1">简单</option>
-                            <option th:selected="${question} ? ((${question.level} == 2) ? 'selected' : '') : ''" value="2">中等</option>
-                            <option th:selected="${question} ? ((${question.level} == 3) ? 'selected' : '') : ''" value="3">困难</option>
+                            <option th:selected="${question} ? ((${question.level} == 1) ? 'selected' : '') : ''"
+                                    value="1">简单
+                            </option>
+                            <option th:selected="${question} ? ((${question.level} == 2) ? 'selected' : '') : ''"
+                                    value="2">中等
+                            </option>
+                            <option th:selected="${question} ? ((${question.level} == 3) ? 'selected' : '') : ''"
+                                    value="3">困难
+                            </option>
                         </select>
                     </div>
 
                     <div class="form-group">
                         <label for="info" class="col-sm-3 control-label">题目描述</label>
                         <div class="col-sm-9">
-                        <textarea class="info" th:text="${question} ? ${question.info} : ''" name="info" id="info">
+                        <textarea class="info" th:text="${question} ? ${question.info} : ${model}" name="info" id="info">
                         </textarea>
                         </div>
                     </div>
@@ -149,7 +157,8 @@
                     <div class="form-group">
                         <label for="system_in" class="col-sm-3 control-label">输入样例</label>
                         <div class="col-sm-9">
-                            <textarea class="form-control" th:text="${question} ? ${question.systemIn} : ''" name="systemIn" id="system_in"
+                            <textarea class="form-control" th:text="${question} ? ${question.systemIn} : ''"
+                                      name="systemIn" id="system_in"
                                       placeholder="输入样例"></textarea>
                         </div>
                     </div>
@@ -157,7 +166,8 @@
                     <div class="form-group">
                         <label for="system_out" class="col-sm-3 control-label">输出样例</label>
                         <div class="col-sm-9">
-                            <textarea class="form-control" th:text="${question} ? ${question.systemOut} : ''" name="systemOut"
+                            <textarea class="form-control" th:text="${question} ? ${question.systemOut} : ''"
+                                      name="systemOut"
                                       id="system_out" placeholder="输出样例"></textarea>
                         </div>
                     </div>

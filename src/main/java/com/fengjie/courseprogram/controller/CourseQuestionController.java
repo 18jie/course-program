@@ -68,6 +68,12 @@ public class CourseQuestionController {
     public String addProgramQuestion(ModelMap map, String questionId) {
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "questions");
+        map.addAttribute("model","<p>【问题描述】</p>\n" +
+                "    <p>【输入形式】</p>\n" +
+                "    <p>【输入样例】</p>\n" +
+                "    <p>【输出样例】</p>\n" +
+                "    <p>【样例说明】</p>\n" +
+                "    <p>【评分标准】</p>");
         if (!StringUtils.isEmpty(questionId)) {
             CourseQuestion questionById = courseQuestionService.getQuestionById(questionId);
             map.addAttribute("question", questionById);

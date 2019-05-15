@@ -44,8 +44,8 @@
     // 提交表单
     function check_form() {
         var title = $('#operation_title').val();
-        var startDate = $("#date_start").val();
-        var endDate = $("#date_end").val();
+        var startDate = $("#start_date").val();
+        var endDate = $("#end_date").val();
         if (!title) {
             tale.alertError("未输入标题");
             return false;
@@ -59,22 +59,27 @@
             return false;
         }
         var finalStr = '';
-        $('tr').each(function () {
+        $('tbody tr').each(function () {
             var str = '';
-            $(this.input()).each(function () {
-                str += $(this).val() + ',';
-            });
-            str = str.substring(0, str.length - 1);
-            str += ";";
+            //按照id，题号，分数
+            var inputs = $(this).find("input");
+            for (var i = 0; i <inputs.length ; i++) {
+                if(i != inputs.length - 1){
+                    str += $(inputs[i]).val() + ",";
+                }else{
+                    str += $(inputs[i]).val() + ";";
+                }
+            }
             finalStr += str;
         });
+        finalStr = finalStr.substring(0,finalStr.length - 1);
         if (finalStr.length == 0) {
             tale.alertError("提交的数据错误");
             return false;
         }
         tale.post({
             url: '/teacher/operation/submitQuestionMsg',
-            data: {"title": title, "questionMsg": finalStr},
+            data: {"title": title, "startTime": startDate, "endTime": endDate, "questions": finalStr},
             success: function (result) {
                 if (result && result.success) {
                     window.location.href = '/teacher/operation/operations';
@@ -126,6 +131,13 @@
                         <input id="end_date" class="form-control form_datetime col-sm-4" name="endTime"/>
                     </div>
 
+                    <div class="form-group">
+                        <label for="class_id" class="col-sm-3 control-label">班级名</label>
+                        <select class="form-select-button" name="classId" id="class_id">
+                            <option th:each="item : ${classes}" th:text="${item.name}" th:value="${item.id}"></option>
+                        </select>
+                    </div>
+
                     <table class="table table-striped">
                         <thead>
                         <tr>
@@ -137,11 +149,12 @@
                         </thead>
                         <tbody>
                         <tr th:each="item : ${questions}">
-                            <input type="hidden" th:id="${item.id + 'id'}"/>
+                            <input type="hidden" th:value="${item.id}"/>
                             <td th:text="${item.questionNo}"></td>
                             <td th:text="${item.title}"></td>
-                            <td><input style="display: inline;" type="text" th:id="${item.id + 'no'}"/></td>
-                            <td><input style="display: inline;" type="text" th:id="${item.id + 'grade'}"/></td>
+                            <td><input style="display: inline;" type="text"/></td>
+                            <td><input style="display: inline;" type="text"/></td>
+                        </tr>
                         </tbody>
                     </table>
                     <div>

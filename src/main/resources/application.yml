@@ -16,6 +16,10 @@ spring:
       enabled: true
       additional-exclude: scr/main/java
       exclude: templates
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 mybatis:
   type-aliases-package: com.fengjie.courseprogram.model
@@ -28,14 +32,7 @@ pagehelper:
   params: countSql
   reasonable: false
   support-methods-arguments: true
-#logging:
-#  level:
-#    root: error
-#    org:
-#      springframework:
-#        security: DEBUG
-#        web: ERROR
-#      hibernate: DEBUG
-#      apache:
-#        commons:
-#          dbcp2: DEBUG
+logging:
+  level:
+    root: info
+    com.fengjie.courseprogram: debug
