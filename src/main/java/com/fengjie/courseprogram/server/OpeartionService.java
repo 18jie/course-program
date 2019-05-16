@@ -130,7 +130,7 @@ public class OpeartionService {
             }
             questionList.forEach(q -> qMap.put(q.getId(), q));
             questionVOs.forEach(q -> BeanUtils.copyProperties(qMap.get(q.getId()), q));
-
+            operationVO.setQuestionList(questionVOs);
         }
         return operationVO;
     }

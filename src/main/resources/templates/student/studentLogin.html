@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>教师登录</title>
+    <title>学生登录</title>
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link th:href="@{/static/css/signin.css}" rel="stylesheet">
     <link th:href="@{/static/plugins/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
@@ -68,7 +68,7 @@
             data: $("#loginForm").serialize(),
             success: function (result) {
                 if (result && result.success) {
-                    window.location.href = '/teacher/index';
+                    window.location.href = '/student/studentIndex';
                 } else {
                     tale.alertError(result.msg || '登录失败');
                 }

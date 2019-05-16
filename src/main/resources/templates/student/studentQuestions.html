@@ -35,13 +35,13 @@
     <![endif]-->
 </head>
 <body>
-<div th:replace="comm/studentHeader::teacherHeader(active=${active},student=${session.student})"></div>
+<div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
                 <li th:class="(${sideActive} == 'operations') ? 'active' : ''">
-                    <a href="student/operationList">作业列表</a>
+                    <a href="student/operations">作业列表</a>
                 </li>
             </ul>
         </div>
@@ -50,22 +50,26 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
+                        <th>题号</th>
                         <th>题目名</th>
+                        <th>类型</th>
                         <th>难度</th>
                         <th>提交状态</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="item : ${questions}">
+                        <td th:text="${item.operationNo}"></td>
                         <td>
-                            <a th:if="${item.type} == 1" th:href="@{/student/choiceQuestion(questionId=${item.id})}"></a>
-                            <a th:if="${item.type} == 2" th:href="@{/student/programQuestion(questionId=${item.id})}"></a>
+                            <a th:if="${item.type} == 1" th:href="@{/student/choiceQuestion(questionId=${item.id})}" th:text="${item.title}"></a>
+                            <a th:if="${item.type} == 2" th:href="@{/student/programQuestion(questionId=${item.id})}" th:text="${item.title}"></a>
                         </td>
+                        <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
                         <td><span
                                 th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
                                 th:text="(${item.level} == 1) ? '简单' : ((${item.level} == 2) ? '中等' : '困难')"></span>
                         </td>
-                        <td th:text="${#strings.contains(answered,${item.id})} ? '已提交' : '未提交'"></td>
+                        <td th:text="${item.answered} ? '已提交' : '未提交'"></td>
                     </tr>
                     </tbody>
                 </table>

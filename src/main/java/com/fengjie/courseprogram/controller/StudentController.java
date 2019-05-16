@@ -2,6 +2,7 @@ package com.fengjie.courseprogram.controller;
 
 import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
+import com.fengjie.courseprogram.model.entity.Grade;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.param.LoginParam;
@@ -44,7 +45,7 @@ public class StudentController {
     public RestResponse studentDoLogin(LoginParam loginParam, HttpSession session) {
         Student student = studentService.loginCheck(loginParam);
         if (null != student) {
-            session.setAttribute("student", session);
+            session.setAttribute("student", student);
             return RestResponse.success();
         }
         return RestResponse.fail();
@@ -79,10 +80,12 @@ public class StudentController {
         OperationVO operationDetail = studentService.getOperationDetail(operationId);
         List<CourseQuestionOperationVO> questionList = operationDetail.getQuestionList();
         questionList.sort(Comparator.naturalOrder());
-        map.addAttribute("questions", questionList);
 
         String answered = studentService.getAnsweredOfStudent(student.getId(), operationId);
-        map.addAttribute("answered", answered);
+        questionList.forEach(q -> q.setAnswered(answered.contains(q.getId())));
+
+        map.addAttribute("questions", questionList);
+
         return "student/studentQuestions";
     }
 
@@ -111,8 +114,29 @@ public class StudentController {
     public RestResponse submitQuestion(CourseQuestion courseQuestion, HttpSession session) {
         String operationId = (String) session.getAttribute("operationId");
         int i = studentService.handleAnswer(courseQuestion, operationId);
-        if(i == 1){
+        if (i == 1) {
             return RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
+
+    @GetMapping("/grade")
+    public String studentGrade(ModelMap map) {
+        Student student = LoginUserContext.getStudent();
+        map.addAttribute("active", "grade");
+        map.addAttribute("sideActive", "grade");
+
+        List<Operation> operationGrades = studentService.getStudentOperationGrades(student);
+        map.addAttribute("operations", operationGrades);
+        return "student/studentGrade";
+    }
+
+    @PostMapping("/getSingleGrade")
+    public RestResponse getSingleGrade(Operation operation) {
+        Student student = LoginUserContext.getStudent();
+        Grade grade = studentService.getGradeOfStudent(student.getId(), operation.getId());
+        if (null != grade) {
+            return RestResponse.success(grade);
         }
         return RestResponse.fail();
     }

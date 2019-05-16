@@ -4,6 +4,8 @@ import com.fengjie.courseprogram.constants.context.LoginUserContext;
 import com.fengjie.courseprogram.model.entity.Course;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.param.Page;
+import com.fengjie.courseprogram.model.queryvo.CourseQuestionAddVO;
+import com.fengjie.courseprogram.model.queryvo.CourseQuestionAnswerVO;
 import com.fengjie.courseprogram.server.CourseQuestionService;
 import com.fengjie.courseprogram.util.RestResponse;
 import com.github.pagehelper.PageInfo;
@@ -76,14 +78,15 @@ public class CourseQuestionController {
                 "    <p>【评分标准】</p>");
         if (!StringUtils.isEmpty(questionId)) {
             CourseQuestion questionById = courseQuestionService.getQuestionById(questionId);
-            map.addAttribute("question", questionById);
+            CourseQuestionAnswerVO courseQuestionAnswerVO = courseQuestionService.transferToVO(questionById);
+            map.addAttribute("question", courseQuestionAnswerVO);
         }
         return "teacher/teacherOperationAddProgramQuestion";
     }
 
     @PostMapping("/question/doSaveQuestion")
     public @ResponseBody
-    RestResponse saveQuestion(CourseQuestion courseQuestion) {
+    RestResponse saveQuestion(CourseQuestionAddVO courseQuestion) {
         Course course = LoginUserContext.getCourse();
         courseQuestion.setCourseId(course.getId());
         int i = courseQuestionService.saveQuestion(courseQuestion);

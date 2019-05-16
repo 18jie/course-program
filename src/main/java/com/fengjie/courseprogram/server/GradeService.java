@@ -2,6 +2,7 @@ package com.fengjie.courseprogram.server;
 
 import com.fengjie.courseprogram.model.entity.Grade;
 import com.fengjie.courseprogram.mybatis.dao.GradeDao;
+import com.fengjie.courseprogram.util.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.util.StringUtils;
@@ -32,6 +33,7 @@ public class GradeService {
 
     public int saveGrade(Grade grade) {
         if (StringUtils.isEmpty(grade.getId())) {
+            grade.setId(ObjectId.get().toString());
             return insertGrade(grade);
         }
         return updateGrade(grade);

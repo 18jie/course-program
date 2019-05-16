@@ -35,7 +35,7 @@
     <![endif]-->
 </head>
 <body>
-<div th:replace="comm/studentHeader::teacherHeader(active=${active},student=${session.student})"></div>
+<div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
@@ -58,7 +58,7 @@
                     <tbody>
                     <tr th:each="item : ${operations}">
                         <td>
-                            <a th:href="@{/student/questions(operationId=${item.id})}" th:text="${item.name}"></a>
+                            <a th:href="@{/student/questions(operationId=${item.id})}" th:text="${item.title}"></a>
                         </td>
                         <td th:text="${item.startTime}"></td>
                         <td th:text="${item.endTime}"></td>

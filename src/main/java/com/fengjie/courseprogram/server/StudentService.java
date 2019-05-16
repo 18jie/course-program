@@ -28,6 +28,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -199,7 +200,9 @@ public class StudentService {
         }
 
         OperationVO operationVO = opeartionService.transferToVO(opeartionService.getOperationById(operationId));
-        Map<String, Integer> gradeMap = operationVO.getQuestionList().stream().collect(Collectors.toMap(CourseQuestionOperationVO::getId, CourseQuestionOperationVO::getSingleGrade, (oldValue, newValue) -> newValue));
+        Map<String, Integer> gradeMap = operationVO.getQuestionList().stream()
+                .collect(Collectors.toMap(CourseQuestionOperationVO::getId
+                        , CourseQuestionOperationVO::getSingleGrade, (oldValue, newValue) -> newValue));
         if (checkAnswer(courseQuestion)) {
             return this.updateGrade(grade, courseQuestion.getId(), gradeMap.get(courseQuestion.getId()));
         } else {
@@ -214,7 +217,22 @@ public class StudentService {
             return gradeService.saveGrade(grade);
         } else {
             //更新成绩
-            grade.setAnswered(grade.getAnswered() + ";" + questionId + "," + score);
+            //将原来的提交的题目和分数换成一个map
+            String[] split = grade.getAnswered().split(";");
+            Map<String, Integer> answeredMap = new HashMap<>();
+            for (String s : split) {
+                //下面分别是id和分数
+                String[] split1 = s.split(",");
+                answeredMap.put(split1[0], Integer.parseInt(split1[1]));
+            }
+            answeredMap.put(questionId, score);
+            //将map转成字符串
+            StringBuilder answered = new StringBuilder();
+            for (String key : answeredMap.keySet()) {
+                answered.append(";").append(key).append(",").append(answeredMap.get(key));
+            }
+            answered.deleteCharAt(0);
+            grade.setAnswered(answered.toString());
             return gradeService.saveGrade(grade);
         }
     }
@@ -234,5 +252,17 @@ public class StudentService {
             return true;
         }
     }
+
+    public List<Operation> getStudentOperationGrades(Student student) {
+        Class classById = classService.getClassById(student.getClassId());
+        Example example = new Example(Operation.class);
+        example.createCriteria()
+                .andEqualTo("classId", classById.getId())
+                .andEqualTo("courseId", classById.getCourseId())
+                .andEqualTo("finishedCondition", 0)
+                .andEqualTo("status", 0);
+        return opeartionService.getOperationsByExample(example);
+    }
+
 
 }

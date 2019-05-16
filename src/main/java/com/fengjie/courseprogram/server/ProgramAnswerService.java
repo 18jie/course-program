@@ -31,4 +31,9 @@ public class ProgramAnswerService {
         return programAnswerDao.select(programAnswer);
     }
 
+    public int addProgramAnswers(List<ProgramAnswer> programAnswers){
+
+        return 0;
+    }
+
 }

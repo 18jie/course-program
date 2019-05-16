@@ -46,7 +46,7 @@
         }
 
         tale.post({
-            url:'/student/getGrade',
+            url:'/student/getSingleGrade',
             data:{"operationId": class_id},
             success:function (result) {
                 if(result && result.success){
@@ -63,7 +63,7 @@
 </script>
 
 <body>
-<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
@@ -74,9 +74,6 @@
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <div class="col-sm-offset-9">
-                <button type="button" data-toggle="modal" data-target="#addUserModal" class="btn btn-info">添加班级</button>
-            </div>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>

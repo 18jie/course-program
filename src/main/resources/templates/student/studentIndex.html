@@ -35,7 +35,7 @@
     <![endif]-->
 </head>
 <body>
-    <div th:replace="comm/studentHeader::teacherHeader(active=${active},student=${student.teacher})"></div>
+    <div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
     <div class="container-fluid">
         <div class="jumbotron">
             <h1>学生首页</h1>

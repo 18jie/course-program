@@ -16,6 +16,8 @@ public class CourseQuestionOperationVO extends CourseQuestion implements Compara
 
     private Integer singleGrade;
 
+    private Boolean answered;
+
     @Override
     public int compareTo(CourseQuestionOperationVO o) {
         if (this.getOperationNo() > o.getOperationNo()) {
