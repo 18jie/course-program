@@ -31,6 +31,8 @@ public class CourseQuestion extends BaseDO {
      */
     private String answer;
 
+    private String exampleAnswer;
+
     @Column(name = "system_in")
     private String systemIn;
 

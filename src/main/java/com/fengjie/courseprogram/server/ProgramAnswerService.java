@@ -31,9 +31,14 @@ public class ProgramAnswerService {
         return programAnswerDao.select(programAnswer);
     }
 
-    public int addProgramAnswers(List<ProgramAnswer> programAnswers){
+    public void addProgramAnswers(List<ProgramAnswer> programAnswers) {
+        programAnswerDao.batchInsert(programAnswers);
+    }
 
-        return 0;
+    public int deleteByQuestionId(String questionId) {
+        ProgramAnswer programAnswer = new ProgramAnswer();
+        programAnswer.setQuestionId(questionId);
+        return programAnswerDao.delete(programAnswer);
     }
 
 }

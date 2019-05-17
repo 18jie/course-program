@@ -21,8 +21,8 @@
 
     <!-- Custom styles for this template -->
     <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
-
-    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
     <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
@@ -51,8 +51,8 @@
         var info = editor.document.getBody().getHtml();
 
         var systemStr = "";
-        var token1 = "*&^%$%$";
-        var token2 = "!@#$%^&*";
+        var token1 = "&%%&";
+        var token2 = "!&##&!";
         $("#test_case .jumbotron").each(function () {
             var texts = $(this).find('textarea');
             systemStr += $(texts[0]).val() + token1 + $(texts[1]).val() + token2;
@@ -92,33 +92,29 @@
         return false;
     }
 
+    function deleteTestCase(obj) {
+        $(obj).parent('div').remove();
+        return false;
+    }
+
     function addTestCase() {
         $("#test_case").append("<div class=\"jumbotron\">\n" +
-            "                            <div class=\"col-sm-offset-9\">\n" +
-            "                                <button type=\"button\" onclick=\"deleteTestCase()\" class=\"btn btn-warning\">删除此样例</button>\n" +
-            "                            </div>\n" +
+            "                            <button type=\"button\" onclick=\"return deleteTestCase(this)\"\n" +
+            "                                    class=\"col-sm-offset-10 btn btn-warning\">删除样例\n" +
+            "                            </button>\n" +
+            "\n" +
             "                            <div class=\"form-group\">\n" +
-            "                                <label for=\"system_in\" class=\"col-sm-3 control-label\">输入测试用例</label>\n" +
             "                                <div class=\"col-sm-9\">\n" +
-            "                            <textarea class=\"form-control\"\n" +
-            "                                      name=\"systemIn\" id=\"system_in\"\n" +
-            "                                      placeholder=\"输入测试用例\"></textarea>\n" +
+            "                                    <textarea class=\"form-control\" placeholder=\"输入测试用例\"></textarea>\n" +
             "                                </div>\n" +
             "                            </div>\n" +
             "\n" +
             "                            <div class=\"form-group\">\n" +
-            "                                <label for=\"system_out\" class=\"col-sm-3 control-label\">输出测试用例</label>\n" +
             "                                <div class=\"col-sm-9\">\n" +
-            "                            <textarea class=\"form-control\"\n" +
-            "                                      name=\"systemOut\"\n" +
-            "                                      id=\"system_out\" placeholder=\"输出测试用例\"></textarea>\n" +
+            "                                    <textarea class=\"form-control\" placeholder=\"输出测试用例\"></textarea>\n" +
             "                                </div>\n" +
             "                            </div>\n" +
             "                        </div>");
-    }
-
-    function deleteTestCase(obj) {
-        $(obj).parent('div').remove();
     }
 </script>
 
@@ -190,32 +186,50 @@
                         </div>
                     </div>
 
-                    <div id="test_case" th:if="${question}">
-                        <div class="jumbotron" th:each="item : ${question.answers}">
-                            <button type="button" onclick="deleteTestCase(this)"
-                                    class="col-sm-offset-9 btn btn-warning">删除此样例
+                    <div id="test_case" th:if="${question} == null">
+                        <div class="jumbotron">
+                            <button type="button" onclick="return deleteTestCase(this)"
+                                    class="col-sm-offset-10 btn btn-warning">删除样例
                             </button>
 
                             <div class="form-group">
-                                <label for="system_in" class="col-sm-3 control-label">输入测试用例</label>
                                 <div class="col-sm-9">
-                            <textarea class="form-control" th:text="${item.systemIn}"
-                                      name="systemIn" id="system_in"
-                                      placeholder="输入测试用例"></textarea>
+                                    <textarea class="form-control" placeholder="输入测试用例"></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group">
-                                <label for="system_out" class="col-sm-3 control-label">输出测试用例</label>
                                 <div class="col-sm-9">
-                            <textarea class="form-control" th:text="${item.systemOut}"
-                                      name="systemOut"
-                                      id="system_out" placeholder="输出测试用例"></textarea>
+                                    <textarea class="form-control" placeholder="输出测试用例"></textarea>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <button type="button" onclick="addTestCase()" class="col-sm-offset-9 btn btn-primary">增加样例</button>
+
+                    <div id="test_case" th:if="${question}">
+                        <div class="jumbotron" th:each="item : ${question.answers}">
+                            <button type="button" onclick="return deleteTestCase(this)"
+                                    class="col-sm-offset-10 btn btn-warning">删除样例
+                            </button>
+
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" th:text="${item.systemIn}"
+                                              placeholder="输入测试用例"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-sm-9">
+                                    <textarea class="form-control" th:text="${item.systemOut}"
+                                              placeholder="输出测试用例"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button style="display: block" type="button" onclick="addTestCase()"
+                            class="col-sm-offset-9 btn btn-primary">增加样例
+                    </button>
 
                     <button type="submit" class="btn btn-primary">
                         提交
@@ -230,9 +244,8 @@
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-<script th:src="@{/static/js/holder.min.js}"></script>
+<!--<script th:src="@{/static/js/holder.min.js}"></script>-->
 </body>
 </html>

@@ -117,4 +117,10 @@ public class CourseQuestionController {
         return RestResponse.fail();
     }
 
+    @PostMapping("/question/submitExample")
+    @ResponseBody
+    public RestResponse submitProgramExample(CourseQuestion courseQuestion){
+        return courseQuestionService.handleExample(courseQuestion);
+    }
+
 }

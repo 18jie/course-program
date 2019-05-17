@@ -46,6 +46,7 @@
         var title = $('#operation_title').val();
         var startDate = $("#start_date").val();
         var endDate = $("#end_date").val();
+        var class_id = $("#class_id option:selected").val();
         if (!title) {
             tale.alertError("未输入标题");
             return false;
@@ -63,23 +64,29 @@
             var str = '';
             //按照id，题号，分数
             var inputs = $(this).find("input");
-            for (var i = 0; i <inputs.length ; i++) {
-                if(i != inputs.length - 1){
+            for (var i = 0; i < inputs.length; i++) {
+                if (i != inputs.length - 1) {
                     str += $(inputs[i]).val() + ",";
-                }else{
+                } else {
                     str += $(inputs[i]).val() + ";";
                 }
             }
             finalStr += str;
         });
-        finalStr = finalStr.substring(0,finalStr.length - 1);
+        finalStr = finalStr.substring(0, finalStr.length - 1);
         if (finalStr.length == 0) {
             tale.alertError("提交的数据错误");
             return false;
         }
         tale.post({
             url: '/teacher/operation/submitQuestionMsg',
-            data: {"title": title, "startTime": startDate, "endTime": endDate, "questions": finalStr},
+            data: {
+                "title": title,
+                "classId": class_id,
+                "startTime": startDate,
+                "endTime": endDate,
+                "questions": finalStr
+            },
             success: function (result) {
                 if (result && result.success) {
                     window.location.href = '/teacher/operation/operations';
@@ -118,7 +125,7 @@
                 <form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()">
 
                     <div class="form-group">
-                        <label for="operation_title" class="col-sm-3 control-label">课程名</label>
+                        <label for="operation_title" class="col-sm-3 control-label">作业名</label>
                         <input id="operation_title" class="form-control col-sm-4" name="title" type="text"/>
                     </div>
 

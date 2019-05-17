@@ -22,6 +22,8 @@ import org.springframework.util.CollectionUtils;
 import org.thymeleaf.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -66,7 +68,7 @@ public class OpeartionService {
     }
 
     public int deleteOperation(String operationId) {
-        return operationDao.deleteByPrimaryKey(operationDao);
+        return operationDao.deleteByPrimaryKey(operationId);
     }
 
     public int rebirthOperation(String operationId) {
@@ -148,7 +150,7 @@ public class OpeartionService {
      * @return
      */
     public int updateOperation(Operation operation) {
-        DateKit.teacherUpdate(operation);
+        operation.setUpdateTime(new Date(System.currentTimeMillis()));
         return operationDao.updateByPrimaryKeySelective(operation);
     }
 
@@ -201,11 +203,28 @@ public class OpeartionService {
 
     /**
      * 通过example查询指定条件的operations
+     *
      * @param example
      * @return
      */
     public List<Operation> getOperationsByExample(Example example) {
         return operationDao.selectByExample(example);
+    }
+
+    public List<Operation> getAllUnfinishedOperations(String courseId) {
+        Operation operation = new Operation();
+        operation.setCourseId(courseId);
+        operation.setFinishedCondition(1);
+        operation.setDeleteFlag(Constants.UNDELETE);
+        return operationDao.select(operation);
+    }
+
+    public List<Operation> getAllFinishedOperations(String courseId){
+        Operation operation = new Operation();
+        operation.setCourseId(courseId);
+        operation.setFinishedCondition(0);
+        operation.setDeleteFlag(Constants.UNDELETE);
+        return operationDao.select(operation);
     }
 
 }

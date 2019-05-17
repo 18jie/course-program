@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>作业题目</title>
+    <title>教师首页</title>
 
     <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
     <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
@@ -18,6 +18,7 @@
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
@@ -25,23 +26,25 @@
     <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
     <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
-    <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
 <body>
-<div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li th:class="(${sideActive} == 'operations') ? 'active' : ''">
-                    <a href="/student/operations">作业列表</a>
+                <li th:class="(${sideActive} == 'unFinishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade">未完成作业</a>
+                </li>
+                <li th:class="(${sideActive} == 'finishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade/finishedOperations">已完成作业</a>
                 </li>
             </ul>
         </div>
@@ -50,26 +53,16 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>题号</th>
-                        <th>题目名</th>
-                        <th>类型</th>
-                        <th>难度</th>
-                        <th>提交状态</th>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>成绩</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="item : ${questions}">
-                        <td th:text="${item.operationNo}"></td>
-                        <td>
-                            <a th:if="${item.type} == 1" th:href="@{/student/choiceQuestion(questionId=${item.id})}" th:text="${item.title}"></a>
-                            <a th:if="${item.type} == 2" th:href="@{/student/programQuestion(questionId=${item.id})}" th:text="${item.title}"></a>
-                        </td>
-                        <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
-                        <td><span
-                                th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
-                                th:text="(${item.level} == 1) ? '简单' : ((${item.level} == 2) ? '中等' : '困难')"></span>
-                        </td>
-                        <td th:text="${item.answered} ? '已提交' : '未提交'"></td>
+                    <tr th:each="item : ${students}">
+                        <td th:text="${item.name}"></td>
+                        <td th:text="${item.studentCode}"></td>
+                        <td th:text="${item.grade}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -77,5 +70,12 @@
         </div>
     </div>
 </div>
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+<script th:src="@{/static/js/holder.min.js}"></script>
 </body>
 </html>

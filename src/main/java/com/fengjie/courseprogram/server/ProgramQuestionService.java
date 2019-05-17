@@ -64,13 +64,18 @@ public class ProgramQuestionService {
                 e.printStackTrace();
                 return RestResponse.fail("运行失败，请检查程序");
             }
-            if (!out.trim().equals(compiler.getRunResult().trim())) {
+            String runResult = compiler.getRunResult();
+            if (runResult.endsWith("\r\n")) {
+                runResult = runResult.substring(0, runResult.length() - 2);
+            }
+            if (!out.trim().equals(runResult.trim())) {
                 return RestResponse.fail("某些测试用例运行结果不正确");
             }
             System.out.println(compiler.getRunResult());
             System.out.println("诊断信息：" + compiler.getCompilerMessage());
         } else {
             log.debug("编译失败");
+            log.debug(compiler.getCompilerMessage());
             return RestResponse.fail(compiler.getCompilerMessage());
         }
         return RestResponse.success("恭喜你通过所有的测试用例");

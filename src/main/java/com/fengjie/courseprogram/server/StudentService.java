@@ -164,7 +164,8 @@ public class StudentService {
                 .andGreaterThanOrEqualTo("endTime", LocalDate.now())
                 .andLessThanOrEqualTo("startTime", LocalDate.now())
                 .andEqualTo("status", 1)
-                .andEqualTo("deleteFlag", Constants.UNDELETE);
+                .andEqualTo("deleteFlag", Constants.UNDELETE)
+                .andEqualTo("finishedCondition", 1);
         return opeartionService.getOperationsByExample(example);
     }
 
@@ -260,7 +261,7 @@ public class StudentService {
                 .andEqualTo("classId", classById.getId())
                 .andEqualTo("courseId", classById.getCourseId())
                 .andEqualTo("finishedCondition", 0)
-                .andEqualTo("status", 0);
+                .andEqualTo("status", 1);
         return opeartionService.getOperationsByExample(example);
     }
 

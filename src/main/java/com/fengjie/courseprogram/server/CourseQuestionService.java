@@ -10,6 +10,7 @@ import com.fengjie.courseprogram.model.queryvo.CourseQuestionAnswerVO;
 import com.fengjie.courseprogram.mybatis.dao.CourseQuestionDao;
 import com.fengjie.courseprogram.util.DateKit;
 import com.fengjie.courseprogram.util.ObjectId;
+import com.fengjie.courseprogram.util.RestResponse;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.BeanUtils;
@@ -35,6 +36,9 @@ public class CourseQuestionService {
 
     @Autowired
     private ProgramAnswerService programAnswerService;
+
+    @Autowired
+    private ProgramQuestionService programQuestionService;
 
     public PageInfo<CourseQuestion> pageQuestions(Page page, String courseId) {
         Example example = new Example(CourseQuestion.class);
@@ -67,49 +71,56 @@ public class CourseQuestionService {
     @Transactional(rollbackFor = Exception.class)
     public int addProgramQuestion(CourseQuestion courseQuestion) {
         CourseQuestionAddVO questionVO = (CourseQuestionAddVO) courseQuestion;
-        List<ProgramAnswer> programAnswers = this.handleProgramAnswer(questionVO.getAnswer());
+        questionVO.setId(ObjectId.get().toString());
+        DateKit.teacherAdd(questionVO);
+
+        List<ProgramAnswer> programAnswers = this.handleProgramAnswer(questionVO.getSystemStr());
 
         programAnswers.forEach(p -> p.setQuestionId(courseQuestion.getId()));
+        programAnswerService.addProgramAnswers(programAnswers);
 
-
-        return 0;
+        return courseQuestionDao.insertSelective(courseQuestion);
     }
 
     @Transactional(rollbackFor = Exception.class)
     public int updateProgramQuestion(CourseQuestion courseQuestion) {
+        CourseQuestionAddVO questionVO = (CourseQuestionAddVO) courseQuestion;
+        DateKit.teacherUpdate(questionVO);
 
-        return 0;
+        //先删除所有的原始答案
+        programAnswerService.deleteByQuestionId(courseQuestion.getId());
+        //用新的数据构造答案
+        List<ProgramAnswer> programAnswers = this.handleProgramAnswer(questionVO.getSystemStr());
+        programAnswers.forEach(p -> p.setQuestionId(courseQuestion.getId()));
+        programAnswerService.addProgramAnswers(programAnswers);
+        //保存新的答案
+        programAnswerService.addProgramAnswers(programAnswers);
+        return courseQuestionDao.updateByPrimaryKeySelective(courseQuestion);
     }
 
     /**
      * 拆分编程题的测试用例（需要测试）
+     *
      * @param answer
      * @return
      */
     private List<ProgramAnswer> handleProgramAnswer(String answer) {
-        String token1 = "*&^%$%$";
-        String token2 = "!@#$%^&*";
+        String token1 = "&%%&";
+        String token2 = "!&##&!";
 
-        List<String> answers = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(answer, token2);
-        while (tokenizer.hasMoreElements()) {
-            answers.add(tokenizer.nextToken());
-        }
+        String[] answers = answer.split(token2);
 
         List<ProgramAnswer> programAnswers = new ArrayList<>();
         for (String ans : answers) {
-            StringTokenizer stringTokenizer = new StringTokenizer(ans, token1);
-            List<String> systems = new ArrayList<>();
-            while (stringTokenizer.hasMoreElements()) {
-                systems.add(stringTokenizer.nextToken());
-            }
-            if (systems.size() != 2) {
+            String[] systems = ans.split(token1);
+            if (systems.length != 2) {
                 throw new BusinessException("上传的数据错误");
             }
             ProgramAnswer pro = new ProgramAnswer();
             pro.setId(ObjectId.get().toString());
-            pro.setSystemIn(systems.get(0));
-            pro.setSystemOut(systems.get(1));
+            pro.setSystemIn(systems[0]);
+            pro.setSystemOut(systems[1]);
+            DateKit.teacherAdd(pro);
             programAnswers.add(pro);
         }
         return programAnswers;
@@ -127,7 +138,9 @@ public class CourseQuestionService {
         return courseQuestionDao.insertSelective(courseQuestion);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public int deleteQuestion(String questionId) {
+        programAnswerService.deleteByQuestionId(questionId);
         return courseQuestionDao.deleteByPrimaryKey(questionId);
     }
 
@@ -167,6 +180,19 @@ public class CourseQuestionService {
         BeanUtils.copyProperties(courseQuestion, courseQuestionAnswerVO);
         courseQuestionAnswerVO.setAnswers(answers);
         return courseQuestionAnswerVO;
+    }
+
+    public RestResponse handleExample(CourseQuestion courseQuestion) {
+        List<ProgramAnswer> ans = programAnswerService.getAnswersByQuestionId(courseQuestion.getId());
+        RestResponse restResponse = null;
+        for (ProgramAnswer an : ans) {
+            restResponse = programQuestionService.handleProgram(courseQuestion.getExampleAnswer(), an.getSystemIn(), an.getSystemOut());
+            if (!restResponse.isSuccess()) {
+                return restResponse;
+            }
+        }
+        courseQuestionDao.updateByPrimaryKeySelective(courseQuestion);
+        return restResponse;
     }
 
 }

@@ -19,12 +19,14 @@
 
     <!-- Custom styles for this template -->
     <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
     <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
 
-    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>-->
 
     <script type="application/javascript">
         var tale = new $.tale;
@@ -63,10 +65,80 @@
                 data: {"id": question_id},
                 success: function (result) {
                     if (result && result.successs) {
-                        tale.alertOk("删除成功");
                         location.reload();
                     } else {
                         tale.alertError("删除失败");
+                    }
+                }
+            });
+            return false;
+        }
+
+        function getExample(question_id) {
+            if (!question_id) {
+                tale.alertError("信息错误");
+                return false;
+            }
+            tale.post({
+                url: "/teacher/operation/question/getSingleQuestion",
+                data: {id: question_id},
+                success: function (result) {
+                    if (result && result.success) {
+                        $("#question_id").val(result.payload.id);
+                        $('#question_data').html(result.payload.info);
+                        var example = result.payload.exampleAnswer;
+                        if (!example) {
+                            $('#copy_button').addClass("disabled");
+                            $("#example").val("");
+                        } else {
+                            // $("#hidden_example").val(example);
+                            // example.replaceAll("\\n", "<br>");
+                            $("#example").val(example);
+                        }
+                    } else {
+                        tale.alertError("请求失败");
+                    }
+                }
+            });
+            return false;
+        }
+
+        function copyExample() {
+            //写到剪切板复制粘贴
+            var obj = document.getElementById("example");
+            //选择当前对象
+            obj.select();
+            try {
+                //进行复制到剪切板
+                if (document.execCommand("Copy", "false", null)) {
+                    //如果复制成功
+                   alert("复制成功！");
+                } else {
+                    //如果复制失败
+                    alert("复制失败！");
+                }
+            } catch (err) {
+                //如果报错
+                alert("复制错误！")
+            }
+        }
+
+        function check_form() {
+            var question_id = $("#question_id").val();
+            if (!question_id) {
+                tale.alertError("数据错误");
+                return false;
+            }
+
+            var example = $("#example_answer").val();
+            tale.post({
+                url: '/teacher/operation/question/submitExample',
+                data: {"id": question_id, "exampleAnswer": example},
+                success: function (result) {
+                    if (result && result.success) {
+                        alert("提交成功");
+                    } else {
+                        alert(result.msg);
                     }
                 }
             });
@@ -113,6 +185,7 @@
                         <th>类型</th>
                         <th>难度</th>
                         <th>编辑</th>
+                        <th>样例</th>
                         <th>删除</th>
                     </tr>
                     </thead>
@@ -120,16 +193,24 @@
                     <tr th:each="item : ${questions.getList()}">
                         <td th:text="${item.questionNo}"></td>
                         <td th:text="${item.title}"></td>
-                        <td th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
+                        <td id="question_type" th:text="(${item.type} == 1) ? '选择题' : '编程题'"></td>
                         <td><span
                                 th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
                                 th:text="(${item.level} == 1) ? '简单' : ((${item.level} == 2) ? '中等' : '困难')"></span>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal"
-                                    th:onclick="get_edit_info([[${item.id}]],[[${item.type}]])"
-                                    data-target="#addUserModal">
+                            <button type="button" class="btn btn-warning"
+                                    th:onclick="get_edit_info([[${item.id}]],[[${item.type}]])">
                                 编辑
+                            </button>
+                        </td>
+                        <td>
+                            <button id="example_button" type="button"
+                                    th:class="(${item.type} == 1) ? 'disabled btn btn-info' : 'btn btn-info'"
+                                    data-toggle="modal"
+                                    th:onclick="getExample([[${item.id}]])"
+                                    data-target="#addUserModal">
+                                样例
                             </button>
                         </td>
                         <td>
@@ -140,7 +221,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <div style="padding-top: 50%">
+                <div style="padding-top: 10%">
                     <ul class="pager">
                         <li th:class="(${questions.getPageNum()} == 1) ? 'previous active' : 'previous'">
                             <a th:if="${questions.getPageNum()} != 1"
@@ -164,12 +245,51 @@
         </div>
     </div>
 </div>
+
+<!-- 模态框示例（Modal） -->
+<form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()"
+      style="margin: 20px;">
+    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        ×
+                    </button>
+                    <h4 class="modal-title" id="myModalLabel">
+                        程序信息
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div id="question_data"></div>
+                    <div class="form-group">
+                        <input type="hidden" name="id" id="question_id"/>
+                        <label for="example_answer" class="col-sm-3 control-label">输入程序</label>
+                        <div class="col-sm-9">
+                            <textarea id="example_answer" class="form-control" placeholder="输入程序"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">
+                            <textarea type="text" class="form-control" readonly="readonly" id="example"></textarea>
+                        </div>
+                    </div>
+                    <button id="copy_button" type="button" onclick="copyExample()">复制样例程序</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        提交
+                    </button>
+                    <span id="tip"> </span>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+</form>
 <!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
-<script th:src="@{/static/js/holder.min.js}"></script>
 </body>
 </html>

@@ -71,11 +71,5 @@ public class TeacherController {
         return "teacher/teacherExamination";
     }
 
-    //成绩管理
-
-    @GetMapping("/grade")
-    public String teacherGrade() {
-        return "teacher/teacherGrade";
-    }
 
 }

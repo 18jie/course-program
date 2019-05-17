@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fengjie.courseprogram.mybatis.mappers.ProgramAnswerMapper">
+    <select id="batchInsert" parameterType="list">
+        insert into program_answer (id,question_id,system_in,system_out,create_time,create_user)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.id},#{item.questionId},#{item.systemIn},#{item.systemOut},#{item.createTime},#{item.createUser})
+        </foreach>
+    </select>
+</mapper>

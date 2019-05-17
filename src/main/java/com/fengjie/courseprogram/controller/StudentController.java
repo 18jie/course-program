@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.util.StringUtils;
 
 import javax.servlet.http.HttpSession;
 import java.util.Comparator;
@@ -69,8 +70,12 @@ public class StudentController {
 
     @GetMapping("/questions")
     public String studentQuestions(ModelMap map, String operationId, HttpSession session) {
-        session.removeAttribute("operationId");
-        session.setAttribute("operationId", operationId);
+        if (!StringUtils.isEmpty(operationId)) {
+            session.removeAttribute("operationId");
+            session.setAttribute("operationId", operationId);
+        } else {
+            operationId = (String) session.getAttribute("operationId");
+        }
 
         Student student = LoginUserContext.getStudent();
 
@@ -132,13 +137,16 @@ public class StudentController {
     }
 
     @PostMapping("/getSingleGrade")
+    @ResponseBody
     public RestResponse getSingleGrade(Operation operation) {
         Student student = LoginUserContext.getStudent();
         Grade grade = studentService.getGradeOfStudent(student.getId(), operation.getId());
         if (null != grade) {
             return RestResponse.success(grade);
         }
-        return RestResponse.fail();
+        grade = new Grade();
+        grade.setGrade(0);
+        return RestResponse.success(grade);
     }
 
 }

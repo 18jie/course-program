@@ -16,6 +16,8 @@ public class Grade extends BaseDO {
 
     private String answered;
 
-    private int status;
+    private Integer grade;
+
+    private Integer status;
 
 }

@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>教师首页</title>
+    <title>已完成作业</title>
 
     <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
     <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
@@ -39,59 +39,51 @@
     var tale = new $.tale;
 
     // 编辑表单
-    function get_edit_info(class_id) {
-        if (!class_id) {
-            alert('Error！');
-            return false;
-        }
-
-        tale.post({
-            url:'/student/getSingleGrade',
-            data:{"id": class_id},
-            success:function (result) {
-                if(result && result.success){
-                    $("#grade").text(result.payload.grade);
-                }else{
-                    tale.alertError("服务器错误");
-                }
-            }
-        });
-
-        return false;
+    function get_edit_info(opeartion_id) {
+        url = "/teacher/grade/studentsGrade?operationId=" + opeartion_id;
+        window.location.href = url;
     }
 
 </script>
 
 <body>
-<div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
             <ul class="nav nav-sidebar">
-                <li th:class="(${sideActive} == 'grade') ? 'active' : ''">
-                    <a href="student/gradeList">成绩列表</a>
+                <li th:class="(${sideActive} == 'unFinishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade">未完成作业</a>
+                </li>
+                <li th:class="(${sideActive} == 'finishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade/finishedOperations">已完成作业</a>
                 </li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="jumbotron">
+                <p>开始批阅后，学生再不可继续答题</p>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th>作业名</th>
+                        <th>名称</th>
                         <th>开始时间</th>
                         <th>结束时间</th>
-                        <th>查看成绩</th>
+                        <th>学生成绩</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="item : ${operations}">
                         <td th:text="${item.title}"></td>
-                        <td th:text="${item.startTime}"></td>
-                        <td th:text="${item.endTime}"></td>
+                        <td th:text="${item.startTimeStr}"></td>
+                        <td th:text="${item.endTimeStr}"></td>
                         <td>
-                            <button type="button" class="btn btn-info" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
-                                查看成绩</button>
+                            <button type="button" class="btn btn-warning" data-toggle="modal"
+                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                                查看
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -100,36 +92,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- 模态框示例（Modal） -->
-<form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()"
-      style="margin: 20px;">
-    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        ×
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        用户信息
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <div id="grade"></div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                    </button>
-                    <span id="tip"> </span>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
-</form>
-
 <!-- Bootstrap core JavaScript
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
