@@ -35,6 +35,7 @@ CREATE TABLE `class` (
 /*Data for the table `class` */
 
 insert  into `class`(`id`,`course_id`,`name`,`create_user`,`create_time`,`update_user`,`update_time`,`delete_flag`) values 
+('5ce7658c6c5cf12fa4c3db77','test1','全流程测试1','test','2019-05-24',NULL,NULL,0),
 ('testclass1','test1','19信计丰杰',NULL,NULL,'test','2019-05-11',0),
 ('testclass2','test1','19云计算1211',NULL,NULL,'test','2019-05-11',0);
 
@@ -94,8 +95,9 @@ CREATE TABLE `course_question` (
 
 insert  into `course_question`(`id`,`course_id`,`question_no`,`level`,`type`,`title`,`info`,`answer`,`example_answer`,`system_in`,`system_out`,`create_time`,`create_user`,`update_time`,`update_user`,`delete_flag`) values 
 ('5cd3d6b4b94dab0c7cb43d8d','test1',2,1,1,'最小的数','<p>从下面的选项中选择最小的数：</p><p>A.1</p><p>B.2</p><p>C.3</p><p>D.4</p>','A',NULL,NULL,NULL,'2019-05-09','','2019-05-14','test',0),
-('5cd3d777b94dab3984dc555f','test1',3,1,2,'输出Hello World！','<p>从控制台中输出Hello World!</p>',NULL,NULL,'',NULL,'2019-05-09','',NULL,NULL,0),
-('5cd6e2a3f58c215598246cb2','test1',4,2,2,'最大的数','<p>从控制台输出最大的数</p>',NULL,NULL,'1 2 3 4 5 11 231','231','2019-05-11','test','2019-05-14','test',0);
+('5cdd7bc079034b4d58513e02','test1',10,3,2,'两数之和','<p>【问题描述】</p><p>计算两个整数的和</p><p>【输入形式】</p><p>两个整数，用空格隔开</p><p>【输入样例】</p><p>1 2</p><p>【输出样例】</p><p>3</p><p>【样例说明】</p><p>【评分标准】</p>',NULL,'import java.util.Scanner;\n\n/**\n * @author fengjie\n * @date 2019:05:17\n */\npublic class Test5 {\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        String[] s = sc.nextLine().split(\" \");\n        System.out.println(Integer.parseInt(s[0]) + Integer.parseInt(s[1]));\n    }\n\n}',NULL,NULL,'2019-05-16','test','2019-05-16','test',0),
+('5cde6f4279034b29f82d0c33','test1',12,1,1,'选择题12','<p>答案是A</p>','A',NULL,NULL,NULL,'2019-05-17','test',NULL,NULL,0),
+('5cde6f5579034b29f82d0c34','test1',13,2,1,'选择题13','<p>答案是C</p>','C',NULL,NULL,NULL,'2019-05-17','test',NULL,NULL,0);
 
 /*Table structure for table `grade` */
 
@@ -119,7 +121,10 @@ CREATE TABLE `grade` (
 /*Data for the table `grade` */
 
 insert  into `grade`(`id`,`student_id`,`operation_id`,`answered`,`grade`,`status`,`create_time`,`create_user`,`update_time`,`update_user`,`delete_flag`) values 
-('5cdcff9b79034b12bcee874b','5cdacabaf58c21566c1a78ff','5cdbecc3f58c2117048a975f','5cd3d6b4b94dab0c7cb43d8d,10',NULL,0,NULL,NULL,NULL,NULL,0);
+('5cde742179034b0978c3cb8c','5cdacabaf58c21566c1a78ff','5cde6fb779034b29f82d0c36','5cd3d6b4b94dab0c7cb43d8d,10;5cde6f5579034b29f82d0c34,10;5cde6f4279034b29f82d0c33,0;5cdd7bc079034b4d58513e02,10',30,0,NULL,NULL,NULL,NULL,0),
+('5cde78f379034b3de4474e44','5cdacabaf58c21566c1a78ff','5cde78ca79034b3de4474e43','5cde6f5579034b29f82d0c34,0;5cde6f4279034b29f82d0c33,10',10,0,NULL,NULL,NULL,NULL,0),
+('5ce694086c5cf12a04072ffe','5cdacabaf58c21566c1a78ff','5ce693d26c5cf12a04072ffd','5cde6f5579034b29f82d0c34,0;5cde6f4279034b29f82d0c33,1',1,0,NULL,NULL,NULL,NULL,0),
+('5ce76d0f6c5cf12fa4c3db7b','5ce765f66c5cf12fa4c3db78','5ce767cd6c5cf12fa4c3db7a','5cd3d6b4b94dab0c7cb43d8d,10;5cde6f5579034b29f82d0c34,10;5cdd7bc079034b4d58513e02,10;5cde6f4279034b29f82d0c33,0',30,0,NULL,NULL,NULL,NULL,0);
 
 /*Table structure for table `operation` */
 
@@ -131,7 +136,7 @@ CREATE TABLE `operation` (
   `class_id` varchar(24) DEFAULT NULL,
   `title` varchar(30) DEFAULT NULL,
   `finished_condition` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0-已修改完成完成；1-未修改完成',
-  `questions` varchar(100) DEFAULT NULL,
+  `questions` varchar(1000) DEFAULT NULL,
   `start_time` date DEFAULT NULL,
   `end_time` date DEFAULT NULL,
   `status` tinyint(1) DEFAULT '1' COMMENT '0-未发布；1-发布',
@@ -146,8 +151,10 @@ CREATE TABLE `operation` (
 /*Data for the table `operation` */
 
 insert  into `operation`(`id`,`course_id`,`class_id`,`title`,`finished_condition`,`questions`,`start_time`,`end_time`,`status`,`create_user`,`create_time`,`update_user`,`update_time`,`delete_flag`) values 
-('5cdbecc3f58c2117048a975f','test1','testclass1','测试布置作业',1,'5cd3d6b4b94dab0c7cb43d8d,1,10;5cd3d777b94dab3984dc555f,2,10;5cd6e2a3f58c215598246cb2,3,10','2019-05-15','2019-05-18',1,'test','2019-05-15',NULL,NULL,0),
-('operationTest1','test1',NULL,'测试作业',1,NULL,'2019-05-12','2019-05-18',0,NULL,NULL,'test','2019-05-15',1);
+('5cde6fb779034b29f82d0c36','test1','testclass1','全流程测试1',0,'5cd3d6b4b94dab0c7cb43d8d,1,10;5cdd7bc079034b4d58513e02,4,10;5cde6f4279034b29f82d0c33,2,10;5cde6f5579034b29f82d0c34,3,10','2019-05-17','2019-05-19',1,'test','2019-05-17',NULL,'2019-05-17',0),
+('5cde78ca79034b3de4474e43','test1','testclass1','全流程测试2',0,'5cde6f4279034b29f82d0c33,1,10;5cde6f5579034b29f82d0c34,2,10','2019-05-17','2019-05-20',1,'test','2019-05-17',NULL,'2019-05-17',0),
+('5ce693d26c5cf12a04072ffd','test1','testclass1','测试布置作业123',0,'5cdd7bc079034b4d58513e02,1,1;5cde6f4279034b29f82d0c33,2,1;5cde6f5579034b29f82d0c34,3,1','2019-05-23','2019-05-25',1,'test','2019-05-23',NULL,'2019-05-23',0),
+('5ce767cd6c5cf12fa4c3db7a','test1','5ce7658c6c5cf12fa4c3db77','测试布置作业',0,'5cd3d6b4b94dab0c7cb43d8d,1,10;5cdd7bc079034b4d58513e02,2,10;5cde6f4279034b29f82d0c33,3,10;5cde6f5579034b29f82d0c34,4,10','2019-05-24','2019-05-30',1,'test','2019-05-24',NULL,'2019-05-24',0);
 
 /*Table structure for table `operation_grade` */
 
@@ -181,27 +188,30 @@ CREATE TABLE `program_answer` (
   `create_time` date DEFAULT NULL,
   `update_user` varchar(24) DEFAULT NULL,
   `update_time` date DEFAULT NULL,
-  `delete_flag` tinyint(1) DEFAULT NULL,
+  `delete_flag` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `program_answer` */
 
 insert  into `program_answer`(`id`,`question_id`,`system_in`,`system_out`,`create_user`,`create_time`,`update_user`,`update_time`,`delete_flag`) values 
-('111','11111',NULL,'Hello World1\r\n',NULL,NULL,NULL,NULL,NULL),
-('1110','111110',NULL,'Hello World10',NULL,NULL,NULL,NULL,NULL),
-('1111','111111',NULL,'Hello World11',NULL,NULL,NULL,NULL,NULL),
-('1112','111112',NULL,'Hello World12',NULL,NULL,NULL,NULL,NULL),
-('1113','111113',NULL,'Hello World13',NULL,NULL,NULL,NULL,NULL),
-('1114','111114',NULL,'Hello World14',NULL,NULL,NULL,NULL,NULL),
-('1115','111115',NULL,'Hello World15',NULL,NULL,NULL,NULL,NULL),
-('112','11112',NULL,'Hello World2',NULL,NULL,NULL,NULL,NULL),
-('113','11113',NULL,'Hello World3',NULL,NULL,NULL,NULL,NULL),
-('114','11114',NULL,'Hello World4',NULL,NULL,NULL,NULL,NULL),
-('116','11116',NULL,'Hello World6',NULL,NULL,NULL,NULL,NULL),
-('117','11117',NULL,'Hello World7',NULL,NULL,NULL,NULL,NULL),
-('118','11118',NULL,'Hello World8',NULL,NULL,NULL,NULL,NULL),
-('119','11119',NULL,'Hello World9',NULL,NULL,NULL,NULL,NULL);
+('111','11111',NULL,'Hello World1',NULL,NULL,NULL,NULL,0),
+('1110','111110',NULL,'Hello World10',NULL,NULL,NULL,NULL,0),
+('1111','111111',NULL,'Hello World11',NULL,NULL,NULL,NULL,0),
+('1112','111112',NULL,'Hello World12',NULL,NULL,NULL,NULL,0),
+('1113','111113',NULL,'Hello World13',NULL,NULL,NULL,NULL,0),
+('1114','111114',NULL,'Hello World14',NULL,NULL,NULL,NULL,0),
+('1115','111115',NULL,'Hello World15',NULL,NULL,NULL,NULL,0),
+('112','11112',NULL,'Hello World2',NULL,NULL,NULL,NULL,0),
+('113','11113',NULL,'Hello World3',NULL,NULL,NULL,NULL,0),
+('114','11114',NULL,'Hello World4',NULL,NULL,NULL,NULL,0),
+('116','11116',NULL,'Hello World6',NULL,NULL,NULL,NULL,0),
+('117','11117',NULL,'Hello World7',NULL,NULL,NULL,NULL,0),
+('118','11118',NULL,'Hello World8',NULL,NULL,NULL,NULL,0),
+('119','11119',NULL,'Hello World9',NULL,NULL,NULL,NULL,0),
+('5cdd7e7679034b0a28a4047a','5cdd7bc079034b4d58513e02','1 2','3','test','2019-05-16',NULL,NULL,0),
+('5cdd7e7679034b0a28a4047b','5cdd7bc079034b4d58513e02','10 20','30','test','2019-05-16',NULL,NULL,0),
+('5cdd7e7679034b0a28a4047c','5cdd7bc079034b4d58513e02','100 200','300','test','2019-05-16',NULL,NULL,0);
 
 /*Table structure for table `program_questions` */
 
@@ -270,8 +280,8 @@ insert  into `student`(`id`,`class_id`,`name`,`email`,`password`,`student_code`,
 ('3','testclass1','丰杰3','1114@qq.com','123456','2013',NULL,NULL,NULL,NULL,NULL,0),
 ('4','testclass1','丰杰4','1115@qq.com','123456','2014',NULL,NULL,NULL,NULL,NULL,0),
 ('5','testclass1','丰杰5','1116@qq.com','123456','2015',NULL,NULL,NULL,NULL,NULL,0),
-('5cdacabaf58c21566c1a78ff','testclass1','丰杰','18866856479@126.com','EFG@AB','201511011032',NULL,'test','2019-05-14',NULL,NULL,0),
-('5cdacabaf58c21566c1a7900','testclass1','张三','11212@qq.com','FGEFGEGE','202020202020',NULL,'test','2019-05-14',NULL,NULL,0),
+('5ce765f66c5cf12fa4c3db78','5ce7658c6c5cf12fa4c3db77','丰杰','11111@qq.com','EFG@AB','201511011032',NULL,'test','2019-05-24',NULL,NULL,0),
+('5ce765f66c5cf12fa4c3db79','5ce7658c6c5cf12fa4c3db77','张三','11212@qq.com','FGEFGEGE','202020202020',NULL,'test','2019-05-24',NULL,NULL,0),
 ('6','testclass1','丰杰6','1117@qq.com','123456','2016',NULL,NULL,NULL,NULL,NULL,0),
 ('7','testclass1','丰杰7','1118@qq.com','123456','2017',NULL,NULL,NULL,NULL,NULL,0),
 ('8','testclass1','丰杰8','1119@qq.com','123456','2018',NULL,NULL,NULL,NULL,NULL,0),
