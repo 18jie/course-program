@@ -15,6 +15,6 @@ public class OperationQuestionParam {
     private String uuid;
 
 
-    private List<String> questionIds;
+    private String questionIds;
 
 }

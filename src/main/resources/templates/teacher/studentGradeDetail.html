@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>学生成绩详情</title>
+
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <!--<link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">-->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="application/javascript">
+        var tale = new $.tale();
+
+        function check_form(operationId, studentId) {
+            if (!operationId || !studentId) {
+                tale.alertError("信息错误");
+            }
+
+            var finalStr = "";
+            $(".jumbotron").each(function () {
+                var inputs = $(this).find("input");
+                if ($(inputs[1]).val() != '') {
+                    finalStr += ($(inputs[0]).val() + "," + $(inputs[1]).val() + ";");
+                }
+            });
+            if (finalStr != '') {
+                finalStr = finalStr.substring(0, finalStr.length - 1);
+            }
+
+            tale.post({
+                url: '/teacher/grade/recheckGrade',
+                data: {"studentId": studentId, "operationId": operationId, "answered": finalStr},
+                success: function (result) {
+                    if (result && result.success) {
+                        //跳转到
+                        url = "/teacher/grade/studentsGrade?operationId=" + operationId;
+                        window.location.href = url;
+                    } else {
+                        tale.alertError("数据上传错误");
+                    }
+                }
+            });
+            return false;
+        }
+
+    </script>
+</head>
+<body>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+                <li th:class="(${sideActive} == 'unFinishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade">未完成作业</a>
+                </li>
+                <li th:class="(${sideActive} == 'finishedOperations') ? 'active' : ''">
+                    <a href="/teacher/grade/finishedOperations">已完成作业</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h1 th:text="${operation.title}"></h1>
+            <p th:text="'开始时间：' + ${operation.startTimeStr} + '----' + '结束时间：' + ${operation.endTimeStr}"></p>
+            <form role="form" id="form_data" th:onsubmit="return check_form([[${operationId}]],[[${studentId}]])">
+                <div class="jumbotron" th:each="item : ${operation.getQuestionList()}">
+                    <h1 th:text="${item.title}"></h1>
+                    <p th:if="${item.type} == 1" th:text="'正确答案：' + ${item.answer}"></p>
+                    <p th:text="'标准分数(满分)：' + ${item.singleGrade}"></p>
+                    <p th:text="'得分：' + ${item.currentGrade}"></p>
+                    <p th:if="${item.answered} == false" th:text="用户从未提交过答案"></p>
+                    <p th:if="${item.answered}" th:text="'答题结果：' + ${item.answerStatus}"></p>
+                    <div style="white-space: pre-line" th:if="${item.answered}" th:text="${item.submitAnswer}"></div>
+                    <input type="hidden" name="questionId" th:value="${item.id}"/>
+                    <input type="text" id="grade" name="grade" style="display: inline-block;width: 300px;"
+                           class="form-control" placeholder="输入修订成绩"/>
+                </div>
+                <center>
+                    <button class="btn btn-lg btn-primary" style="width: 20%;" type="submit">
+                        <span>提交</span>
+                    </button>
+                </center>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

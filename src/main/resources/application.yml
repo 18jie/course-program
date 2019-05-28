@@ -3,8 +3,8 @@ spring:
     name: cource-program
   datasource:
     username: root
-    password: f944480199@
-    url: jdbc:mysql://localhost:3306/paper_program?serverTimezone=Asia/Shanghai
+    password: 123456
+    url: jdbc:mysql://localhost:3306/paper_program?serverTimezone=Asia/Shanghai&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     static-path-pattern: /static/**

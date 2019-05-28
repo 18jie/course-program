@@ -6,7 +6,6 @@ import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.CourseQuestion;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.model.param.OperationQuestionParam;
-import com.fengjie.courseprogram.model.param.SubmitQuestionParam;
 import com.fengjie.courseprogram.model.queryvo.CourseQuestionOperationVO;
 import com.fengjie.courseprogram.model.queryvo.OperationVO;
 import com.fengjie.courseprogram.mybatis.dao.OperationDao;
@@ -18,18 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import org.thymeleaf.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.sql.Date;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * @author fengjie
@@ -103,10 +96,10 @@ public class OpeartionService {
         OperationVO operationVO = new OperationVO();
         BeanUtils.copyProperties(operation, operationVO);
         if (null != operation.getStartTime()) {
-            operationVO.setStartTimeStr(operation.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            operationVO.setStartTimeStr(operation.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         }
         if (null != operation.getEndTime()) {
-            operationVO.setEndTimeStr(operation.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            operationVO.setEndTimeStr(operation.getEndTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
         }
 
         if (!StringUtils.isEmpty(operation.getQuestions())) {
@@ -166,12 +159,26 @@ public class OpeartionService {
      */
     public boolean saveOperationQuestionsTemp(OperationQuestionParam operationQuestionParam) {
         try {
-            cache.put(operationQuestionParam.getUuid(), operationQuestionParam);
+            String questionId = operationQuestionParam.getQuestionIds().trim();
+            List<String> checkedQuestionIds = this.getCheckedQuestionIds(operationQuestionParam.getUuid());
+            if (checkedQuestionIds.contains(questionId)) {
+                checkedQuestionIds.remove(questionId);
+            } else {
+                checkedQuestionIds.add(questionId);
+            }
+            cache.put(operationQuestionParam.getUuid(), checkedQuestionIds);
         } catch (Exception e) {
             log.error("缓存出错", e);
             return false;
         }
         return true;
+    }
+
+    public List<String> getCheckedQuestionIds(String uuid) {
+        if (cache.get(uuid) == null) {
+            return new ArrayList<String>();
+        }
+        return (List<String>) cache.get(uuid).get();
     }
 
     /**
@@ -181,8 +188,8 @@ public class OpeartionService {
      * @return
      */
     public List<CourseQuestion> getCheckedQuestions(String uuid) {
-        OperationQuestionParam value = (OperationQuestionParam) cache.get(uuid).get();
-        return courseQuestionService.getQuestionsByIds(value.getQuestionIds());
+        List<String> value = (List<String>) cache.get(uuid).get();
+        return courseQuestionService.getQuestionsByIds(value);
     }
 
     /**
@@ -192,9 +199,13 @@ public class OpeartionService {
      * @return
      */
     public int submitQuestionMsg(Operation operation) {
-        operation.setId(ObjectId.get().toString());
-        DateKit.teacherAdd(operation);
-        return operationDao.insertSelective(operation);
+        if (StringUtils.isEmpty(operation.getId())) {
+            operation.setId(ObjectId.get().toString());
+            DateKit.teacherAdd(operation);
+            return operationDao.insertSelective(operation);
+        }
+        DateKit.teacherUpdate(operation);
+        return operationDao.updateByPrimaryKeySelective(operation);
     }
 
     public List<Class> getClassesByCourseId(String courseId) {
@@ -219,12 +230,26 @@ public class OpeartionService {
         return operationDao.select(operation);
     }
 
-    public List<Operation> getAllFinishedOperations(String courseId){
+    public List<Operation> getAllFinishedOperations(String courseId) {
         Operation operation = new Operation();
         operation.setCourseId(courseId);
         operation.setFinishedCondition(0);
         operation.setDeleteFlag(Constants.UNDELETE);
         return operationDao.select(operation);
+    }
+
+    public String saveQuestionToCache(Operation operation) {
+        String[] questions = operation.getQuestions().split(";");
+        List<String> questionList = new ArrayList<>();
+
+        for (String question : questions) {
+            String[] split = question.split(",");
+            questionList.add(split[0]);
+        }
+
+        String uuid = UUID.randomUUID().toString();
+        cache.put(uuid, questionList);
+        return uuid;
     }
 
 }

@@ -15,6 +15,7 @@ import com.fengjie.courseprogram.util.MD5Kit;
 import com.fengjie.courseprogram.util.ObjectId;
 import com.fengjie.courseprogram.util.RestResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -22,11 +23,13 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +64,9 @@ public class StudentService {
 
     @Autowired
     private ProgramQuestionService programQuestionService;
+
+    @Autowired
+    private StudentAnswerService studentAnswerService;
 
 
     public Student loginCheck(LoginParam loginParam) {
@@ -101,6 +107,14 @@ public class StudentService {
     }
 
     public int addStudent(Student student) {
+        Example example = new Example(Student.class);
+        example.createCriteria()
+                .andEqualTo("studentCode", student.getStudentCode())
+                .orEqualTo("email", student.getEmail());
+        List<Student> students = studentDao.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(students)) {
+            return 0;
+        }
         student.setPassword(MD5Kit.convertMD5(Constants.DEFAULT_PASSWORD));
         student.setId(ObjectId.get().toString());
         DateKit.addObject(student);
@@ -161,8 +175,8 @@ public class StudentService {
         example.createCriteria()
                 .andEqualTo("courseId", classById.getCourseId())
                 .andEqualTo("classId", classById.getId())
-                .andGreaterThanOrEqualTo("endTime", LocalDate.now())
-                .andLessThanOrEqualTo("startTime", LocalDate.now())
+                .andGreaterThanOrEqualTo("endTime", LocalDateTime.now())
+                .andLessThanOrEqualTo("startTime", LocalDateTime.now())
                 .andEqualTo("status", 1)
                 .andEqualTo("deleteFlag", Constants.UNDELETE)
                 .andEqualTo("finishedCondition", 1);
@@ -190,7 +204,8 @@ public class StudentService {
         return courseQuestionService.getQuestionById(questionId);
     }
 
-    public int handleAnswer(CourseQuestion courseQuestion, String operationId) {
+    @Transactional(rollbackFor = Exception.class)
+    public RestResponse handleAnswer(CourseQuestion courseQuestion, String operationId) {
         Student student = LoginUserContext.getStudent();
         Grade grade = gradeService.getGradeByOperationAndStudent(operationId, student.getId());
 
@@ -204,11 +219,26 @@ public class StudentService {
         Map<String, Integer> gradeMap = operationVO.getQuestionList().stream()
                 .collect(Collectors.toMap(CourseQuestionOperationVO::getId
                         , CourseQuestionOperationVO::getSingleGrade, (oldValue, newValue) -> newValue));
-        if (checkAnswer(courseQuestion)) {
-            return this.updateGrade(grade, courseQuestion.getId(), gradeMap.get(courseQuestion.getId()));
-        } else {
-            return this.updateGrade(grade, courseQuestion.getId(), 0);
+
+        RestResponse restResponse = checkAnswer(courseQuestion);
+        int i = studentAnswerService.saveStudentAnswer(courseQuestion, operationId, restResponse.getMsg());
+        if (i == 0) {
+            throw new BusinessException("保存答案失败");
         }
+        if (restResponse.isSuccess()) {
+            courseQuestionService.updatePassRate(courseQuestion, true);
+            int i1 = this.updateGrade(grade, courseQuestion.getId(), gradeMap.get(courseQuestion.getId()));
+            if (i1 != 1) {
+                throw new BusinessException("成绩更新失败");
+            }
+        } else {
+            courseQuestionService.updatePassRate(courseQuestion, false);
+            int i1 = this.updateGrade(grade, courseQuestion.getId(), 0);
+            if (i1 != 1) {
+                throw new BusinessException("成绩更新失败");
+            }
+        }
+        return restResponse;
     }
 
     private int updateGrade(Grade grade, String questionId, int score) {
@@ -238,19 +268,26 @@ public class StudentService {
         }
     }
 
-    private boolean checkAnswer(CourseQuestion courseQuestion) {
+    private RestResponse checkAnswer(CourseQuestion courseQuestion) {
         if (courseQuestion.getType() == 1) {
             CourseQuestion question = courseQuestionService.getQuestionById(courseQuestion.getId());
-            return question.getAnswer().equalsIgnoreCase(courseQuestion.getAnswer());
+            if (question.getAnswer().equalsIgnoreCase(courseQuestion.getAnswer())) {
+                return RestResponse.success("正确");
+            }
+            return RestResponse.fail("错误");
         } else {
             List<ProgramAnswer> answers = programAnswerService.getAnswersByQuestionId(courseQuestion.getId());
+            int passCount = 0;
             for (ProgramAnswer answer : answers) {
                 RestResponse restResponse = programQuestionService.handleProgram(courseQuestion.getAnswer(), answer.getSystemIn(), answer.getSystemOut());
-                if (!restResponse.isSuccess()) {
-                    return false;
+                if (restResponse.isSuccess()) {
+                    passCount++;
                 }
             }
-            return true;
+            if (passCount == answers.size()) {
+                return RestResponse.success("通过所有测试用例");
+            }
+            return RestResponse.fail("测试样例通过情况：" + passCount + "/" + answers.size());
         }
     }
 

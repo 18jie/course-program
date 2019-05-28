@@ -118,11 +118,7 @@ public class StudentController {
     @ResponseBody
     public RestResponse submitQuestion(CourseQuestion courseQuestion, HttpSession session) {
         String operationId = (String) session.getAttribute("operationId");
-        int i = studentService.handleAnswer(courseQuestion, operationId);
-        if (i == 1) {
-            return RestResponse.success();
-        }
-        return RestResponse.fail();
+        return studentService.handleAnswer(courseQuestion, operationId);
     }
 
     @GetMapping("/grade")

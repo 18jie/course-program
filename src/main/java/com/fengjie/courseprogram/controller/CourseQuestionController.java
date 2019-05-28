@@ -34,10 +34,19 @@ public class CourseQuestionController {
     private CourseQuestionService courseQuestionService;
 
     @GetMapping("/questions")
-    public String teacherOperation(ModelMap map, String current) {
+    public String teacherOperation(ModelMap map, String current, String search, String level, String type) {
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "questions");
 
+        if (!StringUtils.isEmpty(search)) {
+            map.addAttribute("searchCondition", search);
+        }
+        if (!StringUtils.isEmpty(level)) {
+            map.addAttribute("level", level);
+        }
+        if (!StringUtils.isEmpty(type)) {
+            map.addAttribute("type", type);
+        }
         Course course = LoginUserContext.getCourse();
         Page page;
         if (StringUtils.isEmpty(current)) {
@@ -45,7 +54,7 @@ public class CourseQuestionController {
         } else {
             page = new Page(Integer.parseInt(current), 12);
         }
-        PageInfo<CourseQuestion> questions = courseQuestionService.pageQuestions(page, course.getId());
+        PageInfo<CourseQuestion> questions = courseQuestionService.pageQuestions(page, course.getId(), search, level, type);
         map.addAttribute("questions", questions);
         if (questions.getPages() > 0) {
             List<Integer> pageNums = IntStream.rangeClosed(1, questions.getPages()).boxed().collect(Collectors.toList());
@@ -70,7 +79,7 @@ public class CourseQuestionController {
     public String addProgramQuestion(ModelMap map, String questionId) {
         map.addAttribute("active", "operation");
         map.addAttribute("sideActive", "questions");
-        map.addAttribute("model","<p>【问题描述】</p>\n" +
+        map.addAttribute("model", "<p>【问题描述】</p>\n" +
                 "    <p>【输入形式】</p>\n" +
                 "    <p>【输入样例】</p>\n" +
                 "    <p>【输出样例】</p>\n" +
@@ -111,7 +120,7 @@ public class CourseQuestionController {
     RestResponse getSingleQuestion(CourseQuestion courseQuestion) {
         Course course = LoginUserContext.getCourse();
         CourseQuestion question = courseQuestionService.getSingleQuestionById(courseQuestion.getId(), course.getId());
-        if(null != question){
+        if (null != question) {
             return RestResponse.success(question);
         }
         return RestResponse.fail();
@@ -119,7 +128,7 @@ public class CourseQuestionController {
 
     @PostMapping("/question/submitExample")
     @ResponseBody
-    public RestResponse submitProgramExample(CourseQuestion courseQuestion){
+    public RestResponse submitProgramExample(CourseQuestion courseQuestion) {
         return courseQuestionService.handleExample(courseQuestion);
     }
 

@@ -2,14 +2,17 @@ package com.fengjie.courseprogram.model.entity;
 
 import com.fengjie.courseprogram.model.entity.base.BaseDO;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.Column;
+import java.math.BigDecimal;
 
 /**
  * @author fengjie
  * @date 2019/5/8 17:08
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class CourseQuestion extends BaseDO {
 
     @Column(name = "course_id")
@@ -18,6 +21,11 @@ public class CourseQuestion extends BaseDO {
     @Column(name = "question_no")
     private Integer questionNo;
 
+    /**
+     * 题目类型：
+     * 1.选择题
+     * 2.编程题
+     */
     private Integer type;
 
     private Integer level;
@@ -38,4 +46,10 @@ public class CourseQuestion extends BaseDO {
 
     @Column(name = "system_out")
     private String systemOut;
+
+    private Integer totalTried;
+
+    private Integer totalPassed;
+
+    private BigDecimal passRate;
 }

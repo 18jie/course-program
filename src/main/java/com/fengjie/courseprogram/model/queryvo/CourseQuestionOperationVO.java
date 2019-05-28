@@ -12,11 +12,17 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CourseQuestionOperationVO extends CourseQuestion implements Comparable<CourseQuestionOperationVO> {
 
-    private Integer OperationNo;
+    private Integer operationNo;
 
     private Integer singleGrade;
 
     private Boolean answered;
+
+    private String submitAnswer;
+
+    private Integer currentGrade;
+
+    private String answerStatus;
 
     @Override
     public int compareTo(CourseQuestionOperationVO o) {

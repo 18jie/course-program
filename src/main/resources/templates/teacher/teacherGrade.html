@@ -46,13 +46,12 @@
         }
 
         tale.post({
-            url:'/teacher/grade/checkGrade',
-            data:{"id": operation_id},
-            success:function (result) {
-                if(result && result.success){
-                    $("#operation_id").val(result.payload.id);
-                    $("#operation_title").val(result.payload.title);
-                }else{
+            url: '/teacher/grade/checkGrade',
+            data: {"id": operation_id},
+            success: function (result) {
+                if (result && result.success) {
+                    window.location.href = "/teacher/grade";
+                } else {
                     tale.alertError("服务器错误");
                 }
             }
@@ -97,8 +96,10 @@
                         <td th:text="${item.startTimeStr}"></td>
                         <td th:text="${item.endTimeStr}"></td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
-                                自动批阅</button>
+                            <button type="button" class="btn btn-warning" data-toggle="modal"
+                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                                开放查询
+                            </button>
                         </td>
                     </tr>
                     </tbody>

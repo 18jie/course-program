@@ -79,6 +79,9 @@
                 <li th:class="(${sideActive} == 'addStudent') ? 'active' : ''">
                     <a href="/teacher/student/addStudent">添加学生</a>
                 </li>
+                <li th:class="(${sideActive} == 'batchAdd') ? 'active' : ''">
+                    <a href="/teacher/student/batchAddStudents">批量添加学生</a>
+                </li>
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">

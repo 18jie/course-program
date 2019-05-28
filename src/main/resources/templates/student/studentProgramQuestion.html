@@ -40,7 +40,8 @@
                 data: $("#programForm").serialize(),
                 success: function (result) {
                     if (result && result.success) {
-                        window.location.href = "/student/questions";
+                        tale.alertOk(result.msg);
+                        // window.location.href = "/student/questions";
                     } else {
                         tale.alertError(result.msg);
                     }

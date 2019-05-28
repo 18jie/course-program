@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -40,12 +41,21 @@ public class CourseQuestionService {
     @Autowired
     private ProgramQuestionService programQuestionService;
 
-    public PageInfo<CourseQuestion> pageQuestions(Page page, String courseId) {
+    public PageInfo<CourseQuestion> pageQuestions(Page page, String courseId, String search, String level, String type) {
         Example example = new Example(CourseQuestion.class);
         example.setOrderByClause("question_no");
         Example.Criteria criteria = example.createCriteria();
         criteria.andEqualTo("deleteFlag", Constants.UNDELETE);
         criteria.andEqualTo("courseId", courseId);
+        if (!StringUtils.isEmpty(search)) {
+            criteria.setAndOr("(title = " + "\'" + search + "\'" + " or " + "question_no = " + "\'" + search + "\')" + " and ");
+        }
+        if (!StringUtils.isEmpty(level)) {
+            criteria.andEqualTo("level", level);
+        }
+        if (!StringUtils.isEmpty(type)) {
+            criteria.andEqualTo("type", type);
+        }
         return PageHelper.startPage(page.getPageNum(), page.getPageSize())
                 .doSelectPageInfo(() -> courseQuestionDao.selectByExample(example));
     }
@@ -132,7 +142,6 @@ public class CourseQuestionService {
     }
 
     public int addChoiceQuestion(CourseQuestion courseQuestion) {
-        //需要处理
         courseQuestion.setId(ObjectId.get().toString());
         DateKit.teacherAdd(courseQuestion);
         return courseQuestionDao.insertSelective(courseQuestion);
@@ -193,6 +202,15 @@ public class CourseQuestionService {
         }
         courseQuestionDao.updateByPrimaryKeySelective(courseQuestion);
         return restResponse;
+    }
+
+    public int updatePassRate(CourseQuestion courseQuestion, boolean passed) {
+        courseQuestion = courseQuestionDao.selectByPrimaryKey(courseQuestion.getId());
+        courseQuestion.setTotalTried(courseQuestion.getTotalTried() + 1);
+        courseQuestion.setTotalPassed(passed ? courseQuestion.getTotalPassed() + 1 : courseQuestion.getTotalPassed());
+        double totalTried = courseQuestion.getTotalTried() + 0.0;
+        courseQuestion.setPassRate(new BigDecimal((courseQuestion.getTotalPassed() / totalTried) * 100));
+        return courseQuestionDao.updateByPrimaryKeySelective(courseQuestion);
     }
 
 }

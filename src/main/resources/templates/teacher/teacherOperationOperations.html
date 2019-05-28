@@ -58,8 +58,7 @@
 
                         // document.location.href='world_system_notice.php'
                         location.reload();
-                    }
-                    else {
+                    } else {
                         $("#tip").html("<span style='color:red'>失败，请重试</span>");
                         tale.alertError('操作失败');
                     }
@@ -76,26 +75,31 @@
     }
 
     // 编辑表单
-    function get_edit_info(class_id) {
-        if (!class_id) {
-            alert('Error！');
-            return false;
+    function get_edit_info(operationId) {
+        if (!operationId) {
+            tale.alertError("信息错误");
         }
-
-        tale.post({
-            url:'/teacher/operation/getSingleOperation',
-            data:{"id": class_id},
-            success:function (result) {
-                if(result && result.success){
-                    $("#operation_id").val(result.payload.id);
-                    $("#operation_title").val(result.payload.title);
-                }else{
-                    tale.alertError("服务器错误");
-                }
-            }
-        });
-
-        return false;
+        var url = ("/teacher/operation/updateOperation?operationId=" + operationId);
+        window.location.href = url;
+        // if (!class_id) {
+        //     alert('Error！');
+        //     return false;
+        // }
+        //
+        // tale.post({
+        //     url:'/teacher/operation/getSingleOperation',
+        //     data:{"id": class_id},
+        //     success:function (result) {
+        //         if(result && result.success){
+        //             $("#operation_id").val(result.payload.id);
+        //             $("#operation_title").val(result.payload.title);
+        //         }else{
+        //             tale.alertError("服务器错误");
+        //         }
+        //     }
+        // });
+        //
+        // return false;
     }
 
     // 提交表单
@@ -114,7 +118,7 @@
                 success: function (data) {
                     if (data.success) {
                         var msg = "新增";
-                        if(class_id){
+                        if (class_id) {
                             msg = "修改";
                         }
 
@@ -174,18 +178,23 @@
                         <th>名称</th>
                         <th>开始时间</th>
                         <th>结束时间</th>
+                        <th>状态</th>
                         <th>编辑</th>
                         <th>删除</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:each="item : ${operations}">
-                        <td th:text="${item.title}"></td>
+                        <td><a th:href="@{/teacher/operation/singleOperationDetail(operationId=${item.id})}"
+                               th:text="${item.title}"></a></td>
                         <td th:text="${item.startTimeStr}"></td>
                         <td th:text="${item.endTimeStr}"></td>
+                        <td th:text="(${item.finishedCondition} == 1) ? '未完成' : '已完成'"></td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal" th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
-                                编辑</button>
+                            <button type="button" class="btn btn-warning" data-toggle="modal"
+                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                                编辑
+                            </button>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger"

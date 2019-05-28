@@ -112,7 +112,7 @@
                 //进行复制到剪切板
                 if (document.execCommand("Copy", "false", null)) {
                     //如果复制成功
-                   alert("复制成功！");
+                    alert("复制成功！");
                 } else {
                     //如果复制失败
                     alert("复制失败！");
@@ -145,6 +145,29 @@
             return false;
         }
 
+        function search() {
+            url = "/teacher/operation/questions?";
+            var sh = $("#search").val();
+            url += ("search=" + sh);
+            var level = $("#level option:selected").val();
+            url += ("&level=" + level);
+            var type = $("#type option:selected").val();
+            url += ("&type=" + type);
+            window.location.href = url;
+        }
+
+        function pageChange(pageNum) {
+            var url = "/program/pages?";
+            url += ("current=" + pageNum);
+            var sh = $("#search").val();
+            url += ("search=" + sh);
+            var level = $("#level option:selected").val();
+            url += ("&level=" + level);
+            var type = $("#type option:selected").val();
+            url += ("&type=" + type);
+            window.location.href = url;
+        }
+
     </script>
 </head>
 <body>
@@ -167,14 +190,32 @@
                 </li>
             </ul>
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-            <div class="col-sm-offset-9">
-                <button type="button" style="display: inline;" onclick="addChoiceQuestion()" class="btn btn-info">
-                    添加选择题
-                </button>
-                <button type="button" style="display: inline;" onclick="addProgramQuestion()" class="btn btn-info">
-                    添加编程题
-                </button>
+        <div class="col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div>
+                <input type="text" id="search" th:value="${searchCondition}" style="display: inline-block;width: 300px;"
+                       class="form-control" placeholder="输入题号或名称"/>
+                <label for="level" style="display: inline;">难度</label>
+                <select style="display: inline" class="form-select-button" name="level" id="level">
+                    <option value="" th:selected="${level}==null">全部</option>
+                    <option value="1" th:selected="${level}==1">简单</option>
+                    <option value="2" th:selected="${level}==2">中等</option>
+                    <option value="3" th:selected="${level}==3">困难</option>
+                </select>
+                <label for="type" style="display: inline;">类型</label>
+                <select style="display: inline" class="form-select-button" name="type" id="type">
+                    <option value="" th:selected="${type}==null">全部</option>
+                    <option value="1" th:selected="${type}==1">选择题</option>
+                    <option value="2" th:selected="${type}==2">编程题</option>
+                </select>
+                <button style="display: inline;" class="btn btn-info btn-search" onclick="search()">查找</button>
+                <div class="col-sm-offset-2" style="display: inline-block;">
+                    <button type="button" style="display: inline;" onclick="addChoiceQuestion()" class="btn btn-info">
+                        添加选择题
+                    </button>
+                    <button type="button" style="display: inline;" onclick="addProgramQuestion()" class="btn btn-info">
+                        添加编程题
+                    </button>
+                </div>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -184,6 +225,7 @@
                         <th>名称</th>
                         <th>类型</th>
                         <th>难度</th>
+                        <th>通过率</th>
                         <th>编辑</th>
                         <th>样例</th>
                         <th>删除</th>
@@ -198,6 +240,7 @@
                                 th:class="(${item.level} == 1) ? 'label label-info' : ((${item.level} == 2) ? 'label label-warning' : 'label label-danger')"
                                 th:text="(${item.level} == 1) ? '简单' : ((${item.level} == 2) ? '中等' : '困难')"></span>
                         </td>
+                        <td th:text="${item.passRate} + '%'"></td>
                         <td>
                             <button type="button" class="btn btn-warning"
                                     th:onclick="get_edit_info([[${item.id}]],[[${item.type}]])">
@@ -221,22 +264,23 @@
                     </tr>
                     </tbody>
                 </table>
-                <div style="padding-top: 10%">
+                <div class="pager">
                     <ul class="pager">
                         <li th:class="(${questions.getPageNum()} == 1) ? 'previous active' : 'previous'">
                             <a th:if="${questions.getPageNum()} != 1"
-                               th:href="@{/program/pages(current=${questions.getPageNum() - 1})}">&larr; Older</a>
+                               href="#"
+                               th:onclick="pageChange([[${questions.getPageNum() - 1}]])">&larr; Older</a>
                             <span th:if="${questions.getPageNum()} == 1">&larr; Older</span>
                         </li>
                         <li th:each="pageNum : ${pageNums}"
                             th:class="(${questions.getPageNum()} == ${pageNum}) ? 'active' : ''">
                             <a th:if="${questions.getPageNum()} != ${pageNum}"
-                               th:href="@{/program/pages(current=${pageNum})}" th:text="${pageNum}"></a>
+                               href="#" th:onclick="pageChange([[${questions.getPageNum()}]])" th:text="${pageNum}"></a>
                             <span th:if="${questions.getPageNum()} == ${pageNum}" th:text="${pageNum}"></span>
                         </li>
                         <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next active' : 'next'">
                             <a th:if="${questions.getPageNum()} != ${questions.getPages()}"
-                               th:href="@{/program/pages(current=${questions.getPageNum() + 1})}">Newer &rarr;</a>
+                               href="#" th:onclick="pageChange([[${questions.getPageNum() + 1}]])">Newer &rarr;</a>
                             <span th:if="${questions.getPageNum()} == ${questions.getPages()}">Newer &rarr;</span>
                         </li>
                     </ul>

@@ -71,8 +71,8 @@ public class ProgramQuestionService {
             if (!out.trim().equals(runResult.trim())) {
                 return RestResponse.fail("某些测试用例运行结果不正确");
             }
-            System.out.println(compiler.getRunResult());
-            System.out.println("诊断信息：" + compiler.getCompilerMessage());
+            log.debug(runResult);
+            log.debug("诊断信息：" + compiler.getCompilerMessage());
         } else {
             log.debug("编译失败");
             log.debug(compiler.getCompilerMessage());

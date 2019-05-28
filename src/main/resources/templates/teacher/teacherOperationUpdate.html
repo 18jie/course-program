@@ -78,28 +78,15 @@
             tale.alertError("提交的数据错误");
             return false;
         }
-        var mydata = null;
-        if ($("#operation_id")) {
-            mydata = {
-                "id": $("#operation_id").val(),
-                "title": title,
-                "classId": class_id,
-                "startTime": startDate,
-                "endTime": endDate,
-                "questions": finalStr
-            };
-        } else {
-            mydata = {
-                "title": title,
-                "classId": class_id,
-                "startTime": startDate,
-                "endTime": endDate,
-                "questions": finalStr
-            };
-        }
         tale.post({
             url: '/teacher/operation/submitQuestionMsg',
-            data: mydata,
+            data: {
+                "title": title,
+                "classId": class_id,
+                "startTime": startDate,
+                "endTime": endDate,
+                "questions": finalStr
+            },
             success: function (result) {
                 if (result && result.success) {
                     window.location.href = '/teacher/operation/operations';
@@ -131,6 +118,14 @@
         return false;
     }
 
+    function addQuestions(uuid, operationId) {
+        if (!uuid) {
+            tale.alertError("修改错误");
+        }
+        var url = ("/teacher/operation/addOperation?uuid=" + uuid + "&operationId=" + operationId);
+        window.location.href = url;
+    }
+
 </script>
 
 <body>
@@ -156,34 +151,29 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <div class="main">
                 <form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()">
-                    <input id="operation_id" th:if="${operation}" type="hidden" name="id" th:value="${operation.id}"/>
 
                     <div class="form-group">
                         <label for="operation_title" class="col-sm-3 control-label">作业名</label>
                         <input id="operation_title" class="form-control col-sm-4" name="title" type="text"
-                               th:value="(${operation} != null) ? ${operation.title} : ''"/>
+                               th:value="${operation.title}"/>
                     </div>
 
                     <div class="form-group">
                         <label for="start_date" class="col-sm-3 control-label">开始时间</label>
                         <input id="start_date" class="form-control form_datetime col-sm-4" name="endTime"
-                               th:value="(${operation} != null) ? ${operation.startTimeStr} : ''"/>
+                               th:value="${operation.startTimeStr}"/>
                     </div>
                     <div class="form-group">
                         <label for="end_date" class="col-sm-3 control-label">开始时间</label>
                         <input id="end_date" class="form-control form_datetime col-sm-4" name="endTime"
-                               th:value="(${operation} != null) ? ${operation.endTimeStr} : ''"/>
+                               th:value="${operation.endTimeStr}"/>
                     </div>
 
                     <div class="form-group">
                         <label for="class_id" class="col-sm-3 control-label">班级名</label>
-                        <select th:unless="${operation}" class="form-select-button" name="classId" id="class_id">
-                            <option th:each="item : ${classes}" th:text="${item.name}" th:value="${item.id}"></option>
-                        </select>
-                        <select th:if="${operation}" class="form-select-button" name="classId" id="class_id">
+                        <select class="form-select-button" name="classId" id="class_id">
                             <option th:each="item : ${classes}" th:text="${item.name}"
-                                    th:selected="${operation.getClassId()} == ${item.id}"
-                                    th:value="${item.id}"></option>
+                                    th:selected="${item.id} == ${operation.classId}" th:value="${item.id}"></option>
                         </select>
                     </div>
 
@@ -208,8 +198,9 @@
                                 <input type="hidden" th:value="${item.id}"/>
                                 <td th:text="${item.questionNo}"></td>
                                 <td th:text="${item.title}"></td>
-                                <td><input style="display: inline;" type="text" th:value="${itemStat.count}"/></td>
-                                <td><input style="display: inline;" id="choiceScore" type="text"/></td>
+                                <td><input style="display: inline;" type="text" th:value="${item.operationNo}"/></td>
+                                <td><input style="display: inline;" id="choiceScore" type="text"
+                                           th:value="${item.singleGrade}"/></td>
                                 <td>
                                     <button type="button" class="btn btn-danger"
                                             onclick="remove(this)">删除
@@ -240,9 +231,9 @@
                                 <input type="hidden" th:value="${item.id}"/>
                                 <td th:text="${item.questionNo}"></td>
                                 <td th:text="${item.title}"></td>
-                                <td><input style="display: inline;" type="text"
-                                           th:value="${itemStat.count + programStart}"/></td>
-                                <td><input style="display: inline;" id="programScore" type="text"/></td>
+                                <td><input style="display: inline;" type="text" th:value="${item.operationNo}"/></td>
+                                <td><input style="display: inline;" id="programScore" type="text"
+                                           th:value="${item.singleGrade}"/></td>
                                 <td>
                                     <button type="button" class="btn btn-danger"
                                             onclick="return remove(this)">删除
@@ -255,6 +246,9 @@
                     <div>
                         <button style="display: inline;" type="button" onclick="history.go(-1)" class="btn btn-primary">
                             上一步
+                        </button>
+                        <button style="display: inline;margin-left: 20%;" type="button"
+                                th:onclick="addQuestions([[${uuid}]],[[${operation.id}]])" class="btn btn-info">添加题目
                         </button>
                         <button style="display: inline;margin-left: 50%;" type="submit" class="btn btn-primary">完成
                         </button>

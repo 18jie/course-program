@@ -7,6 +7,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author fengjie
@@ -29,13 +30,15 @@ public class Operation extends BaseDO {
 
     private String questions;
 
+    private String excelPath;
+
     @Column(name = "start_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime startTime;
 
     @Column(name = "end_time")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endTime;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime endTime;
 
     /**
      * 发布状态：1-未发布；

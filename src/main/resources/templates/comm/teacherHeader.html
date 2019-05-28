@@ -32,11 +32,11 @@
                         <a th:href="(${course} != '') ? '/teacher/student' : ''">学生</a>
                     </li>
                     <li th:class="(${course} == null) ? 'disabled' : ((${active} == 'operation') ? 'active' : '')">
-                        <a th:href="(${course} != null) ? '/teacher/operation/questions' : ''">作业</a>
+                        <a th:href="(${course} != null) ? '/teacher/operation/questions' : ''">作业和考试</a>
                     </li>
-                    <li th:class="(${course} == null) ? 'disabled' : ((${active} == 'examination') ? 'active' : '')">
-                        <a th:href="(${course} != null) ? '/teacher/examination' : ''">考试</a>
-                    </li>
+<!--                    <li th:class="(${course} == null) ? 'disabled' : ((${active} == 'examination') ? 'active' : '')">-->
+<!--                        <a th:href="(${course} != null) ? '/teacher/examination' : ''">考试</a>-->
+<!--                    </li>-->
                     <li th:class="(${course} == null) ? 'disabled' : ((${active} == 'grade') ? 'active' : '')">
                         <a th:href="(${course} != null) ? '/teacher/grade' : ''">成绩</a>
                     </li>

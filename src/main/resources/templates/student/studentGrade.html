@@ -33,35 +33,34 @@
     <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-</head>
 
-<script>
-    var tale = new $.tale;
+    <script>
+        var tale = new $.tale;
 
-    // 编辑表单
-    function get_edit_info(class_id) {
-        if (!class_id) {
-            alert('Error！');
+        // 编辑表单
+        function get_edit_info(class_id) {
+            if (!class_id) {
+                alert('Error！');
+                return false;
+            }
+
+            tale.post({
+                url:'/student/getSingleGrade',
+                data:{"id": class_id},
+                success:function (result) {
+                    if(result && result.success){
+                        $("#grade").text(result.payload.grade);
+                    }else{
+                        tale.alertError("服务器错误");
+                    }
+                }
+            });
+
             return false;
         }
 
-        tale.post({
-            url:'/student/getSingleGrade',
-            data:{"id": class_id},
-            success:function (result) {
-                if(result && result.success){
-                    $("#grade").text(result.payload.grade);
-                }else{
-                    tale.alertError("服务器错误");
-                }
-            }
-        });
-
-        return false;
-    }
-
-</script>
-
+    </script>
+</head>
 <body>
 <div th:replace="comm/studentHeader::studentHeader(active=${active},student=${session.student})"></div>
 <div class="container-fluid">

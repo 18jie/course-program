@@ -33,6 +33,19 @@
     <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script type="application/javascript">
+        function show_detail(operationId, studentId) {
+            var url = ("/teacher/grade/studentGradeDetail?operationId=" + operationId + "&studentId=" + studentId);
+            window.location.href = url;
+        }
+
+        function download_excel(operationId) {
+            var url = ('/teacher/grade/excelDownload?operationId=' + operationId);
+            $.ajax({
+                url: url
+            })
+        }
+    </script>
 </head>
 <body>
 <div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
@@ -49,6 +62,48 @@
             </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <div class="row">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">成绩分析</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-sm-3">
+                            <P>最高分</P>
+                            <p th:text="${gradeAnalysis.highestScore}"></p>
+                        </div>
+                        <div class="col-sm-3">
+                            <P>最低分</P>
+                            <p th:text="${gradeAnalysis.lowestScore}"></p>
+                        </div>
+                        <div class="col-sm-3">
+                            <P>平均分</P>
+                            <p th:text="${gradeAnalysis.average}"></p>
+                        </div>
+                        <div class="col-sm-3">
+                            <P>平均分</P>
+                            <p th:text="${gradeAnalysis.totalSubmit} + '/' + ${students.size()}"></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">归档</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-sm-3">
+                            <button class="btn btn-lg btn-primary"
+                                    type="button">
+                                <a style="text-decoration: none;color: white"
+                                   th:href="@{/teacher/grade/excelDownload(operationId=${operationId})}">
+                                    成绩导出Excel表格</a></button>
+                        </div>
+                        <div class="col-sm-3 col-sm-offset-1">
+                            <button class="btn btn-lg btn-primary" type="button">下载电子归档</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -56,6 +111,7 @@
                         <th>姓名</th>
                         <th>学号</th>
                         <th>成绩</th>
+                        <th>评阅</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -63,6 +119,12 @@
                         <td th:text="${item.name}"></td>
                         <td th:text="${item.studentCode}"></td>
                         <td th:text="${item.grade}"></td>
+                        <td>
+                            <div th:if="${item.isSubmitOperation} == false" style="color:red">从未提交</div>
+                            <button th:if="${item.isSubmitOperation}" type="button" class="btn btn-info"
+                                    th:onclick="show_detail([[${operationId}]],[[${item.id}]])">评阅
+                            </button>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
