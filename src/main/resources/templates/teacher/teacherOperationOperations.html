@@ -191,8 +191,8 @@
                         <td th:text="${item.endTimeStr}"></td>
                         <td th:text="(${item.finishedCondition} == 1) ? '未完成' : '已完成'"></td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal"
-                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                            <button type="button" class="btn btn-warning"
+                                    th:onclick="return get_edit_info([[${item.id}]])">
                                 编辑
                             </button>
                         </td>
@@ -208,47 +208,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- 模态框示例（Modal） -->
-<form class="form-horizontal" role="form" id="form_data" onsubmit="return check_form()"
-      style="margin: 20px;">
-    <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        ×
-                    </button>
-                    <h4 class="modal-title" id="myModalLabel">
-                        用户信息
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <input type="hidden" name="id" id="operation_id"/>
-                            <label for="operation_title" class="col-sm-3 control-label">课程名</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control" id="operation_title" name="title"
-                                       placeholder="请输入作业名">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        提交
-                    </button>
-                    <span id="tip"> </span>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
-</form>
 
 <!-- Bootstrap core JavaScript
 ================================================== -->

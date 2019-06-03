@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <link th:href="@{/static/plugins/font-awesome/4.7.0/css/font-awesome.min.css}" rel="stylesheet">
+    <link th:href="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.css}" rel="stylesheet">
+    <!--<link th:href="@{/static/css/style.min.css}" rel="stylesheet" type="text/css">-->
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
+    <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
+    <!--<script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>-->
+    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <script src="https://cdn.ckeditor.com/4.11.4/standard/ckeditor.js"></script>
+    <meta charset="utf-8"/>
+    <title>用户信息</title>
+    <script type="text/javascript">
+        var tale = new $.tale();
+
+        function submitForm() {
+            var newPassword1 = $.trim($("#ds_host2").val());
+            var newPassword2 = $.trim($("#ds_host3").val());
+            if (newPassword2 == '' && newPassword1 == '') {
+                // if (oldPassword != '') {
+                //     tale.alertError("请输入新密码");
+                // }
+            } else {
+                // if (oldPassword == '') {
+                //     tale.alertError("请输入原密码");
+                // }
+                if (newPassword1 != newPassword2) {
+                    tale.alertError("两次输入的密码不一致");
+                }
+            }
+
+            // if(oldPassword != ''){
+            //     var back = checkOldPassword(oldPassword);
+            //     if(back === true){
+            //         return false;
+            //     }
+            // }
+
+            tale.post({
+                url: '/teacher/modifyTeacher',
+                data: $("#messageForm").serialize(),
+                success: function (result) {
+                    if (result && result.success) {
+                        tale.alertOk("修改成功");
+                    } else {
+                        tale.alertError(result.msg || '修改失败,稍后再试');
+                    }
+                }
+            });
+            return false;
+        }
+
+        function checkOldPassword() {
+            tale.post({
+                url:'/teacher/checkPassword',
+                data:$("#ds_host1").serialize(),
+                success:function (result) {
+                    if (result && result.success) {
+                        return true;
+                    } else {
+                        tale.alertError(result.msg || '旧密码输入错误');
+                    }
+                }
+            });
+            return false;
+        }
+    </script>
+</head>
+<body>
+<div th:replace="comm/teacherHeader::teacherHeader(active=${active},teacher=${session.teacher},courses=${session.courses},course=${session.course})"></div>
+<div class="container-fluid">
+    <div class="jumbotron">
+        <form class="form-horizontal" id="messageForm" role="form" onsubmit="return submitForm()">
+            <fieldset>
+                <legend>基本信息</legend>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="ds_host">用户名</label>
+                    <div class="col-sm-4">
+                        <input class="form-control" id="ds_host" type="text" name="username" th:value="${session.teacher.username}"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="ds_username">基本信息</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" id="ds_username" type="text" rows="3" name="info"
+                                  th:text="${session.teacher.info}"></textarea>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>修改密码</legend>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="ds_host2">新密码</label>
+                    <div class="col-sm-4">
+                        <input class="form-control" id="ds_host2" type="password" name="password" placeholder="请输入新密码"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label" for="ds_host3">新密码</label>
+                    <div class="col-sm-4">
+                        <input class="form-control" id="ds_host3" type="password" name="newPassword" placeholder="确认新密码"/>
+                    </div>
+                </div>
+            </fieldset>
+            <center>
+                <button class="btn btn-lg btn-primary" style="width: 20%;" type="submit">
+                    <span>提交</span>
+                </button>
+            </center>
+        </form>
+    </div>
+</div>
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+
+</body>
+</html>

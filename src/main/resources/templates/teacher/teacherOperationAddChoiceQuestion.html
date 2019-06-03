@@ -131,9 +131,15 @@
                     <div class="form-group">
                         <label for="level" class="col-sm-3 control-label">难度</label>
                         <select class="form-select-button" id="level">
-                            <option th:selected="${question} ? ((${question.level} == 1) ? 'selected' : '') : ''" value="1">简单</option>
-                            <option th:selected="${question} ? ((${question.level} == 2) ? 'selected' : '') : ''" value="2">中等</option>
-                            <option th:selected="${question} ? ((${question.level} == 3) ? 'selected' : '') : ''" value="3">困难</option>
+                            <option th:selected="${question} ? ((${question.level} == 1) ? true : false) : false"
+                                    value="1">简单
+                            </option>
+                            <option th:selected="${question} ? ((${question.level} == 2) ? true : false) : false"
+                                    value="2">中等
+                            </option>
+                            <option th:selected="${question} ? ((${question.level} == 3) ? true : false) : false"
+                                    value="3">困难
+                            </option>
                         </select>
                     </div>
 

@@ -1,8 +1,11 @@
 package com.fengjie.courseprogram.controller;
 
+import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.entity.Course;
+import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.entity.Teacher;
 import com.fengjie.courseprogram.model.param.LoginParam;
+import com.fengjie.courseprogram.model.param.UserModifyParam;
 import com.fengjie.courseprogram.server.TeacherService;
 import com.fengjie.courseprogram.util.RestResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,16 +63,55 @@ public class TeacherController {
         return "teacher/teacherStudent";
     }
 
-    //学生管理 在teacherStudentController
-
-    //作业管理
-
-    //考试管理
-
     @GetMapping("/examination")
     public String teacherExamination() {
         return "teacher/teacherExamination";
     }
 
+    @GetMapping("/logout")
+    public String teacherLogout(HttpSession session) {
+        session.removeAttribute("teacher");
+        return "redirect:/teacher/teacherLogin";
+    }
+
+    @GetMapping("/teacherMsg")
+    public String teacherMsg(ModelMap map) {
+        map.addAttribute("active","userMsg");
+        return "teacher/teacherMsg";
+    }
+
+    @PostMapping("/modifyTeacher")
+    @ResponseBody
+    public RestResponse updateTeacher(UserModifyParam userModifyParam) {
+        int i = teacherService.updateUser(userModifyParam);
+        if (i == 1) {
+            return RestResponse.success();
+        }
+        return RestResponse.fail();
+    }
+
+    @GetMapping("/enterStudentClasses")
+    public String enterStudentSide(ModelMap map, HttpSession session) {
+        Course course = (Course) session.getAttribute("course");
+        map.addAttribute("active", "enterStudent");
+        List<Class> classesByCourseId = teacherService.getClassesByCourseId(course.getId());
+        map.addAttribute("classes", classesByCourseId);
+        return "teacher/teacherEnterStudentClasses";
+    }
+
+    @GetMapping("/enterStudents")
+    public String enterStudents(ModelMap map, String classId) {
+        map.addAttribute("active", "enterStudent");
+        List<Student> studentByClassId = teacherService.getStudentByClassId(classId);
+        map.addAttribute("students", studentByClassId);
+        return "teacher/teacherEnterStudentStudents";
+    }
+
+    @GetMapping("/doEnterStudent")
+    public String doEnterStudent(String studentId, HttpSession session) {
+        Student studentById = teacherService.getStudentById(studentId);
+        session.setAttribute("student", studentById);
+        return "redirect:/student/studentIndex";
+    }
 
 }

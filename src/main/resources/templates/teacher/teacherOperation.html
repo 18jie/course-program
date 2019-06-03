@@ -157,10 +157,10 @@
         }
 
         function pageChange(pageNum) {
-            var url = "/program/pages?";
+            var url = "/teacher/operation/questions?";
             url += ("current=" + pageNum);
             var sh = $("#search").val();
-            url += ("search=" + sh);
+            url += ("&search=" + sh);
             var level = $("#level option:selected").val();
             url += ("&level=" + level);
             var type = $("#type option:selected").val();
@@ -275,7 +275,7 @@
                         <li th:each="pageNum : ${pageNums}"
                             th:class="(${questions.getPageNum()} == ${pageNum}) ? 'active' : ''">
                             <a th:if="${questions.getPageNum()} != ${pageNum}"
-                               href="#" th:onclick="pageChange([[${questions.getPageNum()}]])" th:text="${pageNum}"></a>
+                               href="#" th:onclick="pageChange([[${pageNum}]])" th:text="${pageNum}"></a>
                             <span th:if="${questions.getPageNum()} == ${pageNum}" th:text="${pageNum}"></span>
                         </li>
                         <li th:class="(${questions.getPageNum()} == ${questions.getPages()}) ? 'next active' : 'next'">

@@ -7,6 +7,7 @@ import com.fengjie.courseprogram.model.entity.*;
 import com.fengjie.courseprogram.model.entity.Class;
 import com.fengjie.courseprogram.model.param.LoginParam;
 import com.fengjie.courseprogram.model.param.StudentBatchAddParam;
+import com.fengjie.courseprogram.model.param.UserModifyParam;
 import com.fengjie.courseprogram.model.queryvo.CourseQuestionOperationVO;
 import com.fengjie.courseprogram.model.queryvo.OperationVO;
 import com.fengjie.courseprogram.mybatis.dao.StudentDao;
@@ -146,7 +147,12 @@ public class StudentService {
             String name = row.getCell(0).getStringCellValue();
             String studentCode = row.getCell(1).getStringCellValue();
             String email = row.getCell(2).getStringCellValue();
-            String password = row.getCell(3).getStringCellValue();
+            String password;
+            if (row.getCell(3) == null || row.getCell(3).getStringCellValue().trim().equals("")) {
+                password = "123456";
+            } else {
+                password = row.getCell(3).getStringCellValue();
+            }
 
             if (StringUtils.isEmpty(name) || StringUtils.isEmpty(studentCode) || StringUtils.isEmpty(email)) {
                 continue;
@@ -271,7 +277,7 @@ public class StudentService {
     private RestResponse checkAnswer(CourseQuestion courseQuestion) {
         if (courseQuestion.getType() == 1) {
             CourseQuestion question = courseQuestionService.getQuestionById(courseQuestion.getId());
-            if (question.getAnswer().equalsIgnoreCase(courseQuestion.getAnswer())) {
+            if (question.getAnswer().equalsIgnoreCase(courseQuestion.getAnswer().trim())) {
                 return RestResponse.success("正确");
             }
             return RestResponse.fail("错误");
@@ -302,5 +308,22 @@ public class StudentService {
         return opeartionService.getOperationsByExample(example);
     }
 
+    public int updateUser(UserModifyParam userModifyParam) {
+        if (userModifyParam.getPassword() != null) {
+            userModifyParam.setPassword(MD5Kit.convertMD5(userModifyParam.getPassword()));
+        }
+        Student user = LoginUserContext.getStudent();
+        if (!org.springframework.util.StringUtils.isEmpty(userModifyParam.getPassword())) {
+            user.setPassword(userModifyParam.getPassword());
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(userModifyParam.getUsername())) {
+            user.setName(userModifyParam.getUsername());
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(userModifyParam.getInfo())) {
+            user.setInfo(userModifyParam.getInfo());
+        }
+        DateKit.studentUpdate(user);
+        return studentDao.updateByPrimaryKeySelective(user);
+    }
 
 }

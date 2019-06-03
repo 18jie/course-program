@@ -41,12 +41,8 @@
             tale.post({
                 url: '/student/submitQuestion',
                 data: $("#programForm").serialize(),
-                success: function (result) {
-                    if (result && result.success) {
-                        window.location.href = "/student/questions";
-                    } else {
-                        tale.alertError();
-                    }
+                success: function () {
+                    window.location.href = "/student/questions";
                 }
             });
             return false;

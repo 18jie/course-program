@@ -72,13 +72,14 @@
             },
             success: function (result) {
                 if (result && result.success) {
-                    tale.alertOk("添加成功");
-                    if (!id) {
-                        $('#form_data')[0].reset();
-                        editor.setData("");
-                    } else {
-                        window.location.href = "/teacher/operation/questions";
-                    }
+                    window.location.href = "/teacher/operation/questions";
+                    // tale.alertOk("添加成功");
+                    // if (!id) {
+                    //     $('#form_data')[0].reset();
+                    //     editor.setData("");
+                    // } else {
+                    //     window.location.href = "/teacher/operation/questions";
+                    // }
                 } else {
                     if (!id) {
                         tale.alertError("添加失败");
@@ -165,13 +166,13 @@
                     <div class="form-group">
                         <label for="level" class="col-sm-3 control-label">难度</label>
                         <select class="form-select-button" id="level">
-                            <option th:selected="${question} ? ((${question.level} == 1) ? 'selected' : '') : ''"
+                            <option th:selected="${question} ? ((${question.level} == 1) ? true : false) : false"
                                     value="1">简单
                             </option>
-                            <option th:selected="${question} ? ((${question.level} == 2) ? 'selected' : '') : ''"
+                            <option th:selected="${question} ? ((${question.level} == 2) ? true : false) : false"
                                     value="2">中等
                             </option>
-                            <option th:selected="${question} ? ((${question.level} == 3) ? 'selected' : '') : ''"
+                            <option th:selected="${question} ? ((${question.level} == 3) ? true : false) : false"
                                     value="3">困难
                             </option>
                         </select>

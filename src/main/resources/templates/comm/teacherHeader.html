@@ -42,9 +42,9 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/teacher/teacherMsg">个人信息</a></li>
+                    <li th:class="(${active} == 'userMsg') ? 'active' : ''"><a href="/teacher/teacherMsg">个人信息</a></li>
                     <li><a href="/teacher/logout">退出</a></li>
-                    <li><a href="#">进入学生端</a></li>
+                    <li><a href="/teacher/enterStudentClasses" target="_blank">进入学生端</a></li>
                 </ul>
                 <!--<form class="navbar-form navbar-right">-->
                 <!--<input type="text" class="form-control" placeholder="Search...">-->

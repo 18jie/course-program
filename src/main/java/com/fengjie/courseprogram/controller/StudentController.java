@@ -6,6 +6,7 @@ import com.fengjie.courseprogram.model.entity.Grade;
 import com.fengjie.courseprogram.model.entity.Operation;
 import com.fengjie.courseprogram.model.entity.Student;
 import com.fengjie.courseprogram.model.param.LoginParam;
+import com.fengjie.courseprogram.model.param.UserModifyParam;
 import com.fengjie.courseprogram.model.queryvo.CourseQuestionOperationVO;
 import com.fengjie.courseprogram.model.queryvo.OperationVO;
 import com.fengjie.courseprogram.server.StudentService;
@@ -50,6 +51,12 @@ public class StudentController {
             return RestResponse.success();
         }
         return RestResponse.fail();
+    }
+
+    @GetMapping("/logout")
+    public String studentLogout(HttpSession session) {
+        session.removeAttribute("student");
+        return "redirect:/student/studentLogin";
     }
 
     @GetMapping("/studentIndex")
@@ -143,6 +150,22 @@ public class StudentController {
         grade = new Grade();
         grade.setGrade(0);
         return RestResponse.success(grade);
+    }
+
+    @GetMapping("/studentMsg")
+    public String teacherMsg(ModelMap map) {
+        map.addAttribute("active", "userMsg");
+        return "student/studentMsg";
+    }
+
+    @PostMapping("/modifyStudent")
+    @ResponseBody
+    public RestResponse updateTeacher(UserModifyParam userModifyParam) {
+        int i = studentService.updateUser(userModifyParam);
+        if (i == 1) {
+            return RestResponse.success();
+        }
+        return RestResponse.fail();
     }
 
 }

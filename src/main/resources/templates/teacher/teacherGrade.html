@@ -23,16 +23,12 @@
     <!-- Custom styles for this template -->
     <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
 
+    <script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" th:src="@{/static/plugins/jquery/3.2.1/jquery-3.2.1.js}"></script>
     <script type="text/javascript" th:src="@{/static/plugins/limonte-sweetalert2/6.4.1/sweetalert2.min.js}"></script>
     <script type="text/javascript" th:src="@{/static/js/base.js}"></script>
     <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-    <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
-    <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
 </head>
 
 <script>
@@ -78,7 +74,7 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
             <div class="jumbotron">
-                <p>开始批阅后，学生再不可继续答题</p>
+                <p>开放成绩查询之后，学生再不可继续答题</p>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -96,8 +92,8 @@
                         <td th:text="${item.startTimeStr}"></td>
                         <td th:text="${item.endTimeStr}"></td>
                         <td>
-                            <button type="button" class="btn btn-warning" data-toggle="modal"
-                                    th:onclick="return get_edit_info([[${item.id}]])" data-target="#addUserModal">
+                            <button type="button" class="btn btn-warning"
+                                    th:onclick="return get_edit_info([[${item.id}]])" >
                                 开放查询
                             </button>
                         </td>
@@ -108,12 +104,6 @@
         </div>
     </div>
 </div>
-<!-- Bootstrap core JavaScript
-================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!-- Just to make our placeholder images work. Don't actually copy the next line! -->
 <script th:src="@{/static/js/holder.min.js}"></script>
 </body>
 </html>
