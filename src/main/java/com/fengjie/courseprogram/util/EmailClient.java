@@ -54,7 +54,7 @@ public class EmailClient {
             message.setText(text);
 
             Transport transport = session.getTransport();
-            transport.connect(from, "flfkbzrwpxcbbcbi");
+            transport.connect(from, "utdlrdcidisnbfha");
             transport.sendMessage(message, new InternetAddress[]{new InternetAddress(to)});
         } catch (MessagingException e) {
             e.printStackTrace();
